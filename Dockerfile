@@ -1,7 +1,11 @@
 # syntax=docker/dockerfile:1.4
-FROM --platform=$BUILDPLATFORM python:3.10-alpine AS builder
+FROM python:3.9-slim as BUILDER
 
 WORKDIR /app
+
+RUN apt-get update && \
+    apt-get -y install gcc mono-mcs && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /app
 RUN --mount=type=cache,target=/root/.cache/pip \
