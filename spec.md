@@ -2,9 +2,14 @@
 
 - A web form accepts one or more genome IDs.
 - The `VectorSearch` python script is called with the given IDs.
-  - The `VectorSearch` script loads the genome .csv files for the given species.
-  - The `VectorSearch` script returns a csv file
-- The csv results of the script are available for download.
+  - The form POSTs a `userInput` field
+    - The `VectorSearch` script loads the genome .csv files for the given species.
+      - The `VectorSearch` script returns a csv string
+      - The form reloads with the output and the input variables
+      - The form re-renders with the output CSV string displayed
+      - The from re-renders with a link to the `/get?id=<input>`, to link to the file download
+- `/get?id=<input>` Calls the `VectorSearch` function with the `id` query parameter
+  - the route handler returns the csv string as a `csv` file, starting a download.
 - The csv results are visualized via chart.
   - The chart is off-the-shelf, as seen on https://plasmodb.org/plasmo/app/
 
