@@ -11,6 +11,17 @@
   {% else %}
     <h1>Give me some input!</h1>
   {% endif %}
+
+  {% if input %}
+    <h2>
+      <output>
+        {{output}}
+      </output>
+    </h2>
+    <p>
+      <a href="/get?id={{input}}">Download</a>
+    </p>
+  {% endif %}
   <form
     action="/form"
     method="POST">
@@ -21,21 +32,10 @@
         type="text"
         name="userInput">
     </label>
-
-    <label>
-      Number A
-      <input type="number" name="a">
-    </label>
-    <label>
-      Number B
-      <input type="number" name="b">
-    </label>
     <button>submit</button>
   </form>
   <p>
     <a href="/">No thank you</a>
   </p>
-
-  <p>math? {{math}}</p>
 </body>
 </html>
