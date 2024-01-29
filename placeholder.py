@@ -1,9 +1,6 @@
-from Bio import SeqUtils
-from Bio import SeqIO
+from bio import SeqIO
 import pandas as pd
 import matplotlib.pyplot as plt
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
 import numpy as np
 from random import randint
 

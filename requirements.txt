@@ -1,6 +1,6 @@
 flask
 pandas
-Bio
+bio
 matplotlib
 numpy
 openpyxl
