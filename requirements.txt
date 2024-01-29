@@ -1,2 +1,6 @@
 flask
 pandas
+Bio
+matplotlib
+numpy
+openpyxl

@@ -39,3 +39,11 @@ Project budget is approximately 50,000 SEK, which maps to ~62 billable hours, or
 12. Adjust the user experience to allow multiple in/out.
 13. Finalize the user experience for batch downloading.
 14. Final wiggle all the knobs and dials.
+
+## Questions
+
+When writing the Reverse Complement HR1 and HR2 from the source `fasta` files, does that process need to run on each request, or can we run that once and commit the reverse compliment files into the codebase?
+
+Can you help me understand the function signature of the program? Right now it looks like it doesn't accept any parameters, and returns a CSV for each of the predefined `Carina_Genes`. What should our user input be? Is there a list of acceptable inputs?
+
+What is the visualization tool called? Where does that code live?
