@@ -12,37 +12,39 @@
     <h1>Give me some input!</h1>
   {% endif %}
 
-  {% if input %}
-    <h2>
-      <output>
-        {{output}}
-      </output>
-    </h2>
-    <p>
-      <a href="/get?id={{input}}">Download</a>
-    </p>
-  {% endif %}
   <form
     action="/form"
     method="POST">
-    <label>
-      Your Input
-      <input
+    <label for="gene-id">Gene ID:</label>
+    <input
         placeholder="PBANKA_XXXXXXX"
-        list="genome-id"
-        name="userInput" />
-        <datalist id="genome-id">
+        list="gene-id-list"
+        name="gene-id"
+        id="gene-id" />
+        <datalist id="gene-id-list">
           <option value="PBANKA_1034300"></option>
           <option value="PBANKA_1231600"></option>
           <option value="PBANKA_1437500"></option>
           <option value="PBANKA_1015500"></option>
           <option value="PBANKA_1319700"></option>
         </datalist>
-    </label>
-    <button>submit</button>
+    <button>Submit</button>
   </form>
-  <p>
-    <a href="/">No thank you</a>
-  </p>
+  {% if error %}
+  <section>
+      {{error}}
+  </section>
+  {% else %}
+    {% if output %}
+    <section>
+      {{output}}
+    </section>
+    {% endif %}
+    {% if input %}
+    <section>
+      <a href="/get?id={{input}}">Download</a>
+    </section>
+    {% endif %}
+  {% endif %}
 </body>
 </html>

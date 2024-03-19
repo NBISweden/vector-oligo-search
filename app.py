@@ -1,37 +1,45 @@
 from flask import Flask, request, render_template, Response
-from add import add
-from placeholder import VectorOligoSearch
+from search.oligo_search import search
+from search.search import SearchError
 
 app = Flask(__name__)
 
 @app.route('/')
-def hello():
-  return render_template('root.html')
+def root():
+    return render_template('root.html')
 
 @app.route('/form', methods=['POST', 'GET'])
-# Sample form POST to get input and render result
 def form():
     form_input = None
     output = None
+    error = None
 
     if request.method == 'POST':
-        form_input = request.form['userInput']
-        output = VectorOligoSearch(form_input)
+        try:
+            form_input = request.form['gene-id']
+            output = search(form_input)
+        except SearchError as e:
+            error = str(e)
 
-    return render_template('form.html',
+    return render_template(
+      'form.html',
       input=form_input,
-      output=output)
+      output=output,
+      error=error
+    )
 
-# Sample download generated CSV
 @app.route("/get")
-def getPlotCSV():
+def get_csv():
     genome_id = request.args.get('id')
-    csv = VectorOligoSearch(genome_id)
+    csv = search(genome_id)
     return Response(
         csv,
         mimetype="text/csv",
-        headers={"Content-disposition":
-                 f"attachment; filename={genome_id}.csv"})
+        headers={
+            "Content-disposition":
+                f"attachment; filename={genome_id}.csv"
+            }
+        )
 
 if __name__ == '__main__':
-  app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8000)
