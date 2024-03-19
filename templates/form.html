@@ -1,11 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cool Form Bro</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Search form{% endblock %}
+{% block content %}
   {% if input %}
     <h1>{{ input }}</h1>
   {% else %}
@@ -15,8 +10,9 @@
   <form
     action="/form"
     method="POST">
-    <label for="gene-id">Gene ID:</label>
+    <label for="gene-id" class="form-label">Gene ID:</label>
     <input
+        class="form-control"
         placeholder="PBANKA_XXXXXXX"
         list="gene-id-list"
         name="gene-id"
@@ -28,12 +24,12 @@
           <option value="PBANKA_1015500"></option>
           <option value="PBANKA_1319700"></option>
         </datalist>
-    <button>Submit</button>
+    <button class="btn btn-primary mb-3">Submit</button>
   </form>
   {% if error %}
-  <section>
+  <div class="alert alert-warning" role="alert">
       {{error}}
-  </section>
+  </div>
   {% else %}
     {% if output %}
     <section>
@@ -46,5 +42,4 @@
     </section>
     {% endif %}
   {% endif %}
-</body>
-</html>
+{% endblock %}
