@@ -1,36 +1,48 @@
 {% extends "base.html" %}
 {% block title %}Search form{% endblock %}
 {% block content %}
-  <form
-    action="/search"
-    method="POST">
-    <label for="gene-id" class="form-label">Gene ID:</label>
-    <input
-        class="form-control"
-        placeholder="PBANKA_XXXXXXX"
-        list="gene-id-list"
-        name="gene-id"
-        id="gene-id" />
-        <datalist id="gene-id-list">
-          <option value="PBANKA_1034300"></option>
-          <option value="PBANKA_1231600"></option>
-          <option value="PBANKA_1437500"></option>
-          <option value="PBANKA_1015500"></option>
-          <option value="PBANKA_1319700"></option>
-        </datalist>
-    <button class="btn btn-primary mb-3">Submit</button>
+  <div class="container-fluid px-lg-5">
+    <form
+      action="/search"
+      method="POST">
+      <label for="gene-id" class="form-label">Gene ID:</label>
+      <input
+          class="form-control"
+          placeholder="PBANKA_XXXXXXX"
+          list="gene-id-list"
+          name="gene-id"
+          id="gene-id" />
+          <datalist id="gene-id-list">
+            <option value="PBANKA_1034300"></option>
+            <option value="PBANKA_1231600"></option>
+            <option value="PBANKA_1437500"></option>
+            <option value="PBANKA_1015500"></option>
+            <option value="PBANKA_1319700"></option>
+          </datalist>
+      <button class="btn btn-primary mb-3">Submit</button>
   </form>
+  </div>
   {% if error %}
   <div class="alert alert-warning" role="alert">
       {{error}}
   </div>
   {% else %}
     {% if output %}
-    <section>
-      <pre>
-      {{output}}
-      </pre>
-    </section>
+      <div class="container-fluid px-lg-5">
+      {% for entry in output %}
+        <div class="row py-lg-5 py-sm-2">
+          <h2>{{ entry.gene_id }}</h2>
+          {% for annotation in entry.annotations %}
+          <div class="col-sm-3 col-lg-2 card bg-light">
+            <span class="badge text-bg-primary">{{ annotation.label }}</span>
+            <div class="card-body break-all">
+              <p class="card-text">{{ entry.sequence[annotation.position[0]:annotation.position[1]] }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      </div>
     {% endif %}
   {% endif %}
 {% endblock %}
