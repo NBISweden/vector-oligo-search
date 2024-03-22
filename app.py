@@ -1,6 +1,18 @@
-from flask import Flask, request, render_template, Response
+from flask import (
+    Flask,
+    request,
+    render_template,
+    Response,
+    json,
+    make_response,
+    jsonify
+)
+import io
+import csv
+from itertools import chain
 from search.oligo_search import search
 from search.search import SearchError
+
 
 app = Flask(__name__)
 
@@ -17,9 +29,10 @@ def form():
     if request.method == 'POST':
         try:
             form_input = request.form['gene-id']
-            output = search(form_input)
+            output = json.dumps(search([form_input]))
         except SearchError as e:
             error = str(e)
+            make_response(jsonify(message), status_code)
 
     return render_template(
       'form.html',
@@ -28,16 +41,42 @@ def form():
       error=error
     )
 
+@app.route('/oligo-search')
+def oligo_search():
+    gene_ids = request.args.getlist('gene-id')
+    try:
+        output = search(gene_ids)
+        return jsonify(output)
+    except SearchError as e:
+        error = str(e)
+        return make_response(jsonify({"error": error}), 404)
+
+    
+
 @app.route("/get")
-def get_csv():
-    genome_id = request.args.get('id')
-    csv = search(genome_id)
+def get_data():
+    gene_ids = request.args.getlist('gene-id')
+    format = request.args.get('format', 'csv')
+    fieldnames = ['GENE ID', 'Oligo sequence']
+    csv_io = io.StringIO()
+    writer = csv.DictWriter(csv_io, fieldnames=fieldnames)
+    writer.writeheader()
+    results = search(gene_ids)
+    for item in results:
+        writer.writerow(
+            {
+                'GENE ID': item.gene_id,
+                'Oligo sequence': item.sequence
+            }
+        )
+
+    output = csv_io.getvalue()
     return Response(
-        csv,
+        output,
         mimetype="text/csv",
         headers={
             "Content-disposition":
-                f"attachment; filename={genome_id}.csv"
+                "attachment; filename=oligo-sequences.csv"
             }
         )
 

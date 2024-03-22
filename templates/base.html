@@ -9,6 +9,35 @@
   {% block head %}{% endblock %}
 </head>
 <body>
+  <div class="content-main">
+
+    <div class="container-fluid header-section">
+      <div class="row">
+        <div class="col-md-11">
+          <!-- TODO: Place logo here  -->
+        </div>
+    
+        <div class="col-md-1">
+          <img src="https://plasmogem.umu.se/pbgem/static/images/umea_university.png" width="80%" height="auto">
+        </div>
+      </div>
+    </div>
+    
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #f0f0f0">
+      <a class="navbar-brand" href="/">Home</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          </li><li class="nav-item">
+            <a class="nav-link" href="/form">Search</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
   {% block content %}
   {% endblock %}
 </body>
