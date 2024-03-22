@@ -10,7 +10,7 @@ from flask import (
 import io
 import csv
 from itertools import chain
-from search.oligo_search import search
+from search.oligo_search import search, search_to_file
 from search.search import SearchError
 
 
@@ -20,26 +20,29 @@ app = Flask(__name__)
 def root():
     return render_template('root.html')
 
-@app.route('/form', methods=['POST', 'GET'])
+@app.route('/search', methods=['POST', 'GET'])
 def form():
     form_input = None
     output = None
     error = None
+    status_code = 200
 
     if request.method == 'POST':
         try:
             form_input = request.form['gene-id']
-            output = json.dumps(search([form_input]))
+            output = search([form_input])
         except SearchError as e:
             error = str(e)
-            make_response(jsonify(message), status_code)
+            status_code = 404
 
     return render_template(
       'form.html',
       input=form_input,
       output=output,
-      error=error
+      error=error,
+      status_code=status_code,
     )
+
 
 @app.route('/oligo-search')
 def oligo_search():
@@ -52,31 +55,20 @@ def oligo_search():
         return make_response(jsonify({"error": error}), 404)
 
     
-
 @app.route("/get")
 def get_data():
     gene_ids = request.args.getlist('gene-id')
     format = request.args.get('format', 'csv')
-    fieldnames = ['GENE ID', 'Oligo sequence']
-    csv_io = io.StringIO()
-    writer = csv.DictWriter(csv_io, fieldnames=fieldnames)
-    writer.writeheader()
-    results = search(gene_ids)
-    for item in results:
-        writer.writerow(
-            {
-                'GENE ID': item.gene_id,
-                'Oligo sequence': item.sequence
-            }
-        )
-
-    output = csv_io.getvalue()
+    (output, ext) = search_to_file(
+        gene_ids,
+        output_format=format
+    )
     return Response(
         output,
         mimetype="text/csv",
         headers={
             "Content-disposition":
-                "attachment; filename=oligo-sequences.csv"
+                f"attachment; filename=oligo-sequences.{ext}"
             }
         )
 

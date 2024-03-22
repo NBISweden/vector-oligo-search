@@ -35,14 +35,15 @@ class SearchResult:
         self.sequence += sub_sequence
 
     @staticmethod
-    def from_df(gene_id, df, keys):
-        result = SearchResult(gene_id=gene_id)
-        for key in keys:
-            value = df[key]
-            logger.warning(f"{key}: {value}: {type(value)}")
-            if type(value) == str:
-                result.concat(
-                    sub_sequence=value,
-                    annotation=key
-                )
-        return result
+    def from_df(df, keys):
+        for (index, row) in df.iterrows():
+            gene_id = row['GENE ID']
+            result = SearchResult(gene_id=gene_id)
+            for key in keys:
+                value = row[key]
+                if type(value) == str:
+                    result.concat(
+                        sub_sequence=value,
+                        annotation=key
+                    )
+            yield result
