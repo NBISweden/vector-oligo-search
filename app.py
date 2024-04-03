@@ -9,35 +9,45 @@ from flask import (
 )
 import io
 import csv
+import logging
 from itertools import chain
 from search.oligo_search import search, search_to_file
 from search.search import SearchError
 
 
+logger = logging.getLogger(__name__)
 app = Flask(__name__)
+
+
 
 @app.route('/')
 def root():
     return render_template('root.html')
 
+
 @app.route('/search', methods=['POST', 'GET'])
 def form():
-    form_input = None
+    gene_ids = []
     output = None
     error = None
     status_code = 200
 
     if request.method == 'POST':
         try:
-            form_input = request.form['gene-id']
-            output = search([form_input])
+            gene_id = request.form['gene-id']
+            gene_list = request.form.get('gene-list', "").strip()
+            gene_ids = (
+                [gene_id] if len(gene_list) == 0
+                else [g.strip().rstrip('\r\n') for g in gene_list.split("\n")]
+            )
+            output = search(gene_ids)
         except SearchError as e:
             error = str(e)
             status_code = 404
 
     return render_template(
       'form.html',
-      input=form_input,
+      gene_ids=gene_ids,
       output=output,
       error=error,
       status_code=status_code,

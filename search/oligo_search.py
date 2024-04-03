@@ -61,11 +61,11 @@ pHIT_KO_HR = pd.DataFrame({
 def get_gene_list(input_gene):
     gene_gRNA = gRNA_EuPaGDT_top[gRNA_EuPaGDT_top['GENE ID'] == input_gene]
     if gene_gRNA.empty:
-        raise SearchError('No gRNA')
+        raise SearchError(f'No gRNA found for: {input_gene}')
     
     gene_HR = pHIT_KO_HR[pHIT_KO_HR['GENE ID'] == input_gene]
     if gene_HR.empty:
-        raise SearchError('Gene Cannot be Found')
+        raise SearchError(f'No gene found for: {input_gene}')
 
     gene_gRNA_top2 = gene_gRNA.iloc[:3]
  
