@@ -32,14 +32,9 @@
       {% for entry in output %}
         <div class="row py-lg-5 py-sm-2">
           <h2>{{ entry.gene_id }}</h2>
-          {% for annotation in entry.annotations %}
-          <div class="col-sm-3 col-lg-2 card bg-light">
-            <span class="badge text-bg-primary">{{ annotation.label }}</span>
-            <div class="card-body break-all">
-              <p class="card-text">{{ entry.sequence[annotation.position[0]:annotation.position[1]] }}</p>
-            </div>
-          </div>
-          {% endfor %}
+          <p>
+          {% for annotation in entry.annotations %}<span class="annotated-sequence break-all" data-annotation="{{ annotation.label }}">{{ entry.sequence[annotation.position[0]:annotation.position[1]] }}</span>{% endfor %}
+          </p>
         </div>
       {% endfor %}
       </div>

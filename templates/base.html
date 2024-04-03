@@ -11,6 +11,55 @@
     .break-all {
       word-break: break-all;
     }
+    .annotated-sequence {
+      display: inline-block;
+      position: relative;
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      letter-spacing: 4px;
+      border-left: solid 2px rgba(0, 0, 0, 0);
+      border-right: solid 2px rgba(0, 0, 0, 0);
+    }
+    .annotated-sequence:first-child {
+      border-left: solid 2px rgba(0, 0, 0, 1);
+    }
+    .annotated-sequence:last-child {
+      border-right: solid 2px rgba(0, 0, 0, 1);
+    }
+    .annotated-sequence::after {
+      display: block;
+      content: "";
+      position: absolute;
+      top: calc(100% - 20px);
+      left: 1px;
+      right: 1px;
+      height: 5px;
+     /* background: #900;*/
+      border-top: solid 1px black;
+      border-left: solid 1px black;
+      border-right: solid 1px black;
+      transition: color 0.1s, background-color 0.1s, border-color 0.1s;
+      /*border-radius: 0 0 5px 5px;*/
+      overflow: hidden;
+      /*color: #fff;*/
+    }
+    .annotated-sequence:hover {
+      color: #666;
+      border-left: solid 2px rgba(200, 200, 200, 1);
+      border-right: solid 2px rgba(200, 200, 200, 1);
+    }
+    .annotated-sequence::after {
+      letter-spacing: normal;
+      content: attr(data-annotation);
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      font-size: 12px;
+    }
+    .annotated-sequence:hover::after {
+      color: black;
+      background-color: #eee;
+    }
   </style>
 </head>
 <body>
