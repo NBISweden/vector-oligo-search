@@ -4,3 +4,5 @@ bio
 matplotlib
 numpy
 openpyxl
+markdown
+python-frontmatter

@@ -5,7 +5,8 @@ from flask import (
     Response,
     json,
     make_response,
-    jsonify
+    jsonify,
+    redirect
 )
 import io
 import csv
@@ -13,16 +14,17 @@ import logging
 from itertools import chain
 from search.oligo_search import search, search_to_file
 from search.search import SearchError
+import frontmatter
+import markdown
 
 
 logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 
-
 @app.route('/')
 def root():
-    return render_template('root.html')
+    return redirect("page/home")
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -52,6 +54,22 @@ def form():
       error=error,
       status_code=status_code,
     )
+
+
+@app.route('/page/<page_id>', methods=['GET'])
+def page(page_id):
+    page_path = f'pages/{page_id}.md'
+    try:
+        with open(page_path, "r") as f:
+            page_data = frontmatter.load(f)
+            html = markdown.markdown(page_data.content)
+            return render_template(
+                'page.html',
+                content=html,
+                title=page_data.metadata.get('title', "Default title")
+            )
+    except FileNotFoundError:
+        return render_template('404.html', url=f'page/{page_id}'), 404
 
 
 @app.route('/oligo-search')

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Vector oligo search: {{ title }}{% endblock %}
+{% block content %}
+<div class="container-fluid px-lg-5 py-3">
+  {% autoescape false %}
+  {{ content }}
+  {% endautoescape %}
+</div>
+{% endblock %}
