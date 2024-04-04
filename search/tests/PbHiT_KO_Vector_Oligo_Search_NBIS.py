@@ -131,7 +131,7 @@ pHIT_KO_HR = pd.DataFrame({
 #Convert to batch search
 #gene_list=['PBANKA_1034300,PBANKA_1231600,PBANKA_1437500,PBANKA_1015500,PBANKA_1319700']
 #rows=len(gene_list)
-def get_sequence(gene_list):
+def get_sequence_list(gene_list):
     dftest=pd.DataFrame()
 
     for x in gene_list:
@@ -173,26 +173,25 @@ def get_sequence(gene_list):
         #df=df.append(new_row,ignore_index=True)
     return dftest
 
-if __name__ == "__main__":
-    #pHIT_KO_BbsI_gRNA.head(10)
+#pHIT_KO_BbsI_gRNA.head(10)
 
-    #dftest.head(10)
-        
-
-
-    # In[9]:
+#dftest.head(10)
+    
 
 
-    dftest.to_csv("/Users/srchernandez/Desktop/PbHiT_KO_Vector_Carina", index=None)
+# In[9]:
 
 
-    # In[10]:
+#dftest.to_csv("/Users/srchernandez/Desktop/PbHiT_KO_Vector_Carina", index=None)
 
 
-    dftest.to_excel("/Users/srchernandez/Desktop/PbHiT_KO_Vector_Carina.xlsx", index=None)
+# In[10]:
 
 
-    # In[ ]:
+#dftest.to_excel("/Users/srchernandez/Desktop/PbHiT_KO_Vector_Carina.xlsx", index=None)
+
+
+# In[ ]:
 
 
 
