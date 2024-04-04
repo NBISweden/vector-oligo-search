@@ -8,5 +8,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r requirements.txt
 
 COPY . /app
+COPY ./CHANGELOG.md /app/pages/changelog.md
 
 CMD ["flask", "--app", "app.py", "--debug", "run", "--host", "0.0.0.0"]
