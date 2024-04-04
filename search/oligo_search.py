@@ -22,13 +22,13 @@ PstI = 'CTGCAG'
 
 # Read gRNA excel files as table
 # this file has top 3 gRNAs for each gene, read only until column C 'Total_score'
-gRNA_EuPaGDT_top = pd.read_excel("selected_gRNA.PbHIT_KO_Test.xlsx", index_col=None, na_values=['NA'], usecols="A:C")
+gRNA_EuPaGDT_top = pd.read_excel("./resources/selected_gRNA.PbHIT_KO_Test.xlsx", index_col=None, na_values=['NA'], usecols="A:C")
 gRNA_EuPaGDT_top[['GENE ID', 'gRNA ID', 'directionality']] = gRNA_EuPaGDT_top.gRNA_id.str.split("_", expand=True)
 gRNA_EuPaGDT_top['GENE ID'] = gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA', 'PBANKA_', regex=True)
 
 # Create a DataFrame that has the Gene ID, HR1, and HR2
 # Read HR1 FASTA file
-HR1_fasta_rev = "HR1_rev_comp.fasta"
+HR1_fasta_rev = "./resources/HR1_rev_comp.fasta"
 HR1_seq_rev = [i for i in SeqIO.parse(HR1_fasta_rev, 'fasta')]
 
 # Store HR1 sequences into a string
@@ -39,7 +39,7 @@ for seq_record in SeqIO.parse(HR1_fasta_rev, 'fasta'):
     HR1_seq_rev.append(str(seq_record.seq))
 
 # Read HR2 FASTA file
-HR2_fasta_rev = "HR2_rev_comp.fasta"
+HR2_fasta_rev = "./resources/HR2_rev_comp.fasta"
 HR2_seq_rev = [i for i in SeqIO.parse(HR2_fasta_rev, 'fasta')]
 
 # Store HR2 sequences into a string
