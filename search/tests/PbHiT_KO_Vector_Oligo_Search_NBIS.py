@@ -131,7 +131,7 @@ pHIT_KO_HR = pd.DataFrame({
 #Convert to batch search
 #gene_list=['PBANKA_1034300,PBANKA_1231600,PBANKA_1437500,PBANKA_1015500,PBANKA_1319700']
 #rows=len(gene_list)
-def get_sequence(gene_list):
+def get_sequence_list(gene_list):
     dftest=pd.DataFrame()
 
     for x in gene_list:

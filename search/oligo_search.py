@@ -58,7 +58,7 @@ pHIT_KO_HR = pd.DataFrame({
 })
 
 
-def get_gene_list(input_gene):
+def get_sequence(input_gene):
     gene_gRNA = gRNA_EuPaGDT_top[gRNA_EuPaGDT_top['GENE ID'] == input_gene]
     if gene_gRNA.empty:
         raise SearchError(f'No gRNA found for: {input_gene}')
@@ -90,13 +90,17 @@ def get_gene_list(input_gene):
     return PbHOT_KO_Vector_List
 
 
-def search_to_file(gene_ids, output_format="csv"):
-    full_result = pd.concat(
+def get_sequence_list(gene_ids):
+    return pd.concat(
         [
-            get_gene_list(gene_id)
+            get_sequence(gene_id)
             for gene_id in gene_ids
         ]
     )
+
+
+def search_to_file(gene_ids, output_format="csv"):
+    full_result = get_sequence_list(gene_ids)
     output_data = pd.DataFrame(
         {
             'GENE ID': full_result['GENE ID'],
@@ -116,7 +120,7 @@ def search(gene_ids):
     return list(chain(
         *[
             SearchResult.from_df(
-                get_gene_list(gene_id),
+                get_sequence(gene_id),
                 anno.OLIGO_SEQUENCE_ORDER
             )
             for gene_id in gene_ids
