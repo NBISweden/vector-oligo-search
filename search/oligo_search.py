@@ -2,9 +2,9 @@ from Bio import SeqIO
 import pandas as pd
 from .annotations import Annotations as anno
 from .search import SearchError, SearchResult
-from itertools import chain
 import logging
 import io
+import zipfile
 
 
 logger = logging.getLogger(__name__)
@@ -21,10 +21,20 @@ PstI = 'CTGCAG'
 
 
 # Read gRNA excel files as table
-# this file has top 3 gRNAs for each gene, read only until column C 'Total_score'
-gRNA_EuPaGDT_top = pd.read_excel("./resources/selected_gRNA.PbHIT_KO_Test.xlsx", index_col=None, na_values=['NA'], usecols="A:C")
-gRNA_EuPaGDT_top[['GENE ID', 'gRNA ID', 'directionality']] = gRNA_EuPaGDT_top.gRNA_id.str.split("_", expand=True)
-gRNA_EuPaGDT_top['GENE ID'] = gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA', 'PBANKA_', regex=True)
+# this file has top 3 gRNAs for each gene,
+# read only until column C 'Total_score'
+gRNA_EuPaGDT_top = pd.read_excel(
+    "./resources/selected_gRNA.PbHIT_KO_Test.xlsx",
+    index_col=None,
+    na_values=['NA'],
+    usecols="A:C"
+)
+gRNA_EuPaGDT_top[['GENE ID', 'gRNA ID', 'directionality']] = (
+    gRNA_EuPaGDT_top.gRNA_id.str.split("_", expand=True)
+)
+gRNA_EuPaGDT_top['GENE ID'] = (
+    gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA', 'PBANKA_', regex=True)
+)
 
 # Create a DataFrame that has the Gene ID, HR1, and HR2
 # Read HR1 FASTA file
@@ -62,13 +72,13 @@ def get_sequence(input_gene):
     gene_gRNA = gRNA_EuPaGDT_top[gRNA_EuPaGDT_top['GENE ID'] == input_gene]
     if gene_gRNA.empty:
         raise SearchError(f'No gRNA found for: {input_gene}')
-    
+
     gene_HR = pHIT_KO_HR[pHIT_KO_HR['GENE ID'] == input_gene]
     if gene_HR.empty:
         raise SearchError(f'No gene found for: {input_gene}')
 
     gene_gRNA_top2 = gene_gRNA.iloc[:3]
- 
+
     PbHOT_KO_Vector_List = pd.DataFrame({
         'Oligo sequence': "",
         'GENE ID': input_gene,
@@ -90,6 +100,46 @@ def get_sequence(input_gene):
     return PbHOT_KO_Vector_List
 
 
+def df_to_file(df, output_format="csv"):
+    output_data = pd.DataFrame(
+        {
+            'GENE ID': df['GENE ID'],
+            'Oligo sequence': df['Oligo sequence'],
+        }
+    )
+    mimetype = None
+    output = io.BytesIO()
+    if output_format == "csv":
+        csv_output = io.BytesIO()
+        output_data.to_csv(csv_output)
+
+        with zipfile.ZipFile(
+            output,
+            "a",
+            zipfile.ZIP_DEFLATED,
+            False
+        ) as csv_zip:
+            csv_zip.writestr(
+                "oligo-vecotry-sequences.csv",
+                csv_output.getvalue().decode("utf-8")
+            )
+        mimetype = "application/zip"
+    elif output_format == "xlsx":
+        output_data.to_excel(output)
+        mimetype = (
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
+    return output.getvalue(), mimetype
+
+
+def df_to_search_result(df):
+    return SearchResult.from_df(
+        df,
+        anno.OLIGO_SEQUENCE_ORDER
+    )
+
+
 def get_sequence_list(gene_ids):
     return pd.concat(
         [
@@ -101,29 +151,4 @@ def get_sequence_list(gene_ids):
 
 def search_to_file(gene_ids, output_format="csv"):
     full_result = get_sequence_list(gene_ids)
-    output_data = pd.DataFrame(
-        {
-            'GENE ID': full_result['GENE ID'],
-            'Oligo sequence': full_result['Oligo sequence'],
-        }
-    )
-    if output_format == "csv":
-        return output_data.to_csv(), "csv"
-
-    if output_format == "excel":
-        output = io.BytesIO()
-        output_data.to_excel(output)
-        return output.getvalue(), "xlsx"
-
-
-def search(gene_ids):
-    return list(chain(
-        *[
-            SearchResult.from_df(
-                get_sequence(gene_id),
-                anno.OLIGO_SEQUENCE_ORDER
-            )
-            for gene_id in gene_ids
-        ]
-    ))
-
+    return df_to_file(full_result, output_format=output_format)

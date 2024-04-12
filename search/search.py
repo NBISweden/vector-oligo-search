@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import logging
-import math
+import base64
 
 
 logger = logging.getLogger(__name__)
@@ -47,3 +47,9 @@ class SearchResult:
                         annotation=key
                     )
             yield result
+
+
+def stream_to_base64_url(file_data, mime_type):
+    data = base64.b64encode(file_data).decode("utf-8").strip()
+    url = f"data:{mime_type};base64,{data}"
+    return url

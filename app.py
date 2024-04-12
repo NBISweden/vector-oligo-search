@@ -2,29 +2,41 @@ from flask import (
     Flask,
     request,
     render_template,
-    Response,
     json,
-    make_response,
-    jsonify,
     redirect
 )
-import io
-import csv
 import logging
-from itertools import chain
-from search.oligo_search import search, search_to_file
-from search.search import SearchError
+from search.oligo_search import (
+    get_sequence_list,
+    df_to_file,
+    df_to_search_result
+)
+from search.search import SearchError, stream_to_base64_url
 import frontmatter
 import markdown
 
 
 logger = logging.getLogger(__name__)
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder="static"
+)
+app.secret_key = "myverysecretkey"
 
 
 @app.route('/')
 def root():
     return redirect("page/home")
+
+
+def parse_gene_ids(gene_id=None, gene_list=None):
+    gene_list = ("" if gene_list is None else gene_list).strip()
+    gene_ids = [] if gene_id is None else [gene_id]
+    gene_ids = (
+        gene_ids if len(gene_list) == 0
+        else [g.strip().rstrip('\r\n') for g in gene_list.split("\n")]
+    )
+    return list(set(gene_ids))
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -33,26 +45,47 @@ def form():
     output = None
     error = None
     status_code = 200
+    csv_data = None
+    xlsx_data = None
 
     if request.method == 'POST':
+        gene_ids = parse_gene_ids(
+            request.form.get('gene-id'),
+            request.form.get('gene-list')
+        )
+
+    if len(gene_ids) > 0:
         try:
-            gene_id = request.form['gene-id']
-            gene_list = request.form.get('gene-list', "").strip()
-            gene_ids = (
-                [gene_id] if len(gene_list) == 0
-                else [g.strip().rstrip('\r\n') for g in gene_list.split("\n")]
-            )
-            output = search(gene_ids)
+            sequence_list_df = get_sequence_list(gene_ids)
+            output = list(df_to_search_result(sequence_list_df))
+
+            (csv, mimetype) = df_to_file(sequence_list_df, "csv")
+            csv_data = stream_to_base64_url(csv, mimetype)
+
+            (xlsx, mimetype) = df_to_file(sequence_list_df, "xlsx")
+            xlsx_data = stream_to_base64_url(xlsx, mimetype)
         except SearchError as e:
             error = str(e)
             status_code = 404
 
     return render_template(
-      'form.html',
-      gene_ids=gene_ids,
-      output=output,
-      error=error,
-      status_code=status_code,
+        'form.html',
+        gene_ids=gene_ids,
+        output=None if output is None else json.dumps(output),
+        error=error,
+        status_code=status_code,
+        files=[
+            {
+                "name": "oligo-vector-sequence.xlsx",
+                "data": xlsx_data,
+                "type": "XLSX"
+            },
+            {
+                "name": "oligo-vector-sequence.zip",
+                "data": csv_data,
+                "type": "CSV"
+            }
+        ]
     )
 
 
@@ -71,34 +104,6 @@ def page(page_id):
     except FileNotFoundError:
         return render_template('404.html', url=f'page/{page_id}'), 404
 
-
-@app.route('/oligo-search')
-def oligo_search():
-    gene_ids = request.args.getlist('gene-id')
-    try:
-        output = search(gene_ids)
-        return jsonify(output)
-    except SearchError as e:
-        error = str(e)
-        return make_response(jsonify({"error": error}), 404)
-
-    
-@app.route("/get")
-def get_data():
-    gene_ids = request.args.getlist('gene-id')
-    format = request.args.get('format', 'csv')
-    (output, ext) = search_to_file(
-        gene_ids,
-        output_format=format
-    )
-    return Response(
-        output,
-        mimetype="text/csv",
-        headers={
-            "Content-disposition":
-                f"attachment; filename=oligo-sequences.{ext}"
-            }
-        )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8000)

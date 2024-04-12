@@ -50,43 +50,21 @@ PBANKA_1466100">{% for gene_id in gene_ids %}{{ gene_id }}
   </div>
   {% else %}
     {% if output %}
+      <hr/>
       <div class="container-fluid px-lg-5">
-      {% for entry in output %}
-        <div class="row my-lg-5 my-sm-2">
-          <h2>{{ entry.gene_id }}</h2>
-          <div class="accordion" id="accordion-{{ loop.index }}">
-            <div class="accordion-item">
-              <h3 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-annotated-{{ loop.index }}" aria-expanded="true" aria-controls="collapse-annotated-{{ loop.index }}">
-                  Annotated sequence
-                </button>
-              </h3>
-              <div id="collapse-annotated-{{ loop.index }}" class="accordion-collapse collapse show" data-bs-parent="#accordion-{{ loop.index }}">
-                <div class="accordion-body">
-                  <p>
-                  {% for annotation in entry.annotations %}<span class="annotated-sequence break-all" data-annotation="{{ annotation.label }}">{{ entry.sequence[annotation.position[0]:annotation.position[1]] }}</span>{% endfor %}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div class="accordion-item">
-              <h3 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sequence-{{ loop.index }}" aria-expanded="true" aria-controls="collapse-sequence-{{ loop.index }}">
-                  Sequence only
-                </button>
-              </h3>
-              <div id="collapse-sequence-{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ loop.index }}">
-                <div class="accordion-body">
-                  <p>
-                    <span class="annotated-sequence break-all" data-annotation="Oligo sequence">{{ entry.sequence }}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
+        <h2>Search results</h2>
+        {% for file in files %}
+        <a class="btn buttons-csv buttons-html5 btn-success" download="{{ file.name }}" href="{{ file.data }}">Download {{ file.type }}</a>
+        {% endfor %}
       </div>
+      <div class="container-fluid px-lg-5" id="item-view"></div>
+      <script src="https://unpkg.com/mustache@4.2.0/mustache.js"></script>
+      <script src="/static/render-items.js"></script>
+      <script>
+        const items = {% autoescape false %}{{ output }}{% endautoescape %};
+        updatePageState()
+        window.addEventListener("hashchange", updatePageState)
+      </script>
     {% endif %}
   {% endif %}
 {% endblock %}
