@@ -58,7 +58,7 @@ PBANKA_1466100">{% for gene_id in gene_ids %}{{ gene_id }}
         {% endfor %}
       </div>
       <div class="container-fluid px-lg-5" id="item-view"></div>
-      <script src="https://unpkg.com/mustache@4.2.0/mustache.js"></script>
+      <script src="/static/vendor/mustache.js"></script>
       <script src="/static/render-items.js"></script>
       <script>
         const items = {% autoescape false %}{{ output }}{% endautoescape %};
