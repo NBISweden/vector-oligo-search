@@ -16,4 +16,6 @@ def test_compare_algorithms():
         system_result = system_get_sequence([gene_id])
         system_sequences = list(system_result['Oligo sequence'])
 
-        assert original_sequences == system_sequences, f"the resulting vectors for {gene_id} are all the same"
+        assert original_sequences == system_sequences, (
+            f"the resulting vectors for {gene_id} are all the same"
+        )
