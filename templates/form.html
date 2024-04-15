@@ -51,6 +51,57 @@ PBANKA_1466100">{% for gene_id in gene_ids %}{{ gene_id }}
   {% else %}
     {% if output %}
       <hr/>
+      {% raw %}
+      <script id="annotation-template" type="x-tmpl-mustache">
+        <span class="annotated-sequence break-all" data-annotation="{{ label }}">{{ sequence }}</span>
+      </script>
+      <script id="row-template" type="x-tmpl-mustache">
+        <div class="row my-lg-5 my-sm-2">
+          <h3>{{ gene_id }}</h3>
+          <div class="accordion" id="accordion-{{ index }}">
+            <div class="accordion-item">
+              <h4 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-annotated-{{ index }}" aria-expanded="true" aria-controls="collapse-annotated-{{ index }}">
+                  Annotated sequence
+                </button>
+              </h4>
+              <div id="collapse-annotated-{{ index }}" class="accordion-collapse collapse show" data-bs-parent="#accordion-{{ index }}">
+                <div class="accordion-body">
+                  <p>
+                    {{{annotatedView}}}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h4 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sequence-{{ index }}" aria-expanded="true" aria-controls="collapse-sequence-{{ index }}">
+                  Sequence only
+                </button>
+              </h4>
+              <div id="collapse-sequence-{{ index }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ index }}">
+                <div class="accordion-body">
+                  <p>
+                    <span class="annotated-sequence break-all" data-annotation="Oligo sequence">{{ sequence }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </script>
+      <script id="pagination-item-template" type="x-tmpl-mustache">
+        <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>
+      </script>
+      <script id="pagination-template" type="x-tmpl-mustache">
+        <nav aria-label="Page navigation" class="my-3">
+          <ul class="pagination justify-content-center">
+            {{{paginationItems}}}
+            <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
+          </ul>
+        </nav>
+      </script>
+      {% endraw %}
       <div class="container-fluid px-lg-5">
         <h2>Search results</h2>
         {% for file in files %}
