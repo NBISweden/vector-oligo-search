@@ -13,7 +13,7 @@
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="gene-id">Gene identifier</label>
               <div class="col-sm-9">
-                <input class="form-control is-invalid ui-autocomplete-input" id="gene-id" name="gene-id" placeholder="PBANKA_XXXXXXX" type="text" value="">
+                <input class="form-control ui-autocomplete-input" id="gene-id" name="gene-id" placeholder="PBANKA_XXXXXXX" type="text" value="">
                 <datalist id="gene-id-list">
                   <option value="PBANKA_1034300"></option>
                   <option value="PBANKA_1231600"></option>
@@ -29,7 +29,7 @@
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="gene-list">Gene identifier(s)</label>
             <div class="col-sm-9">
-                <textarea class="form-control is-invalid" id="gene-list" name="gene-list" placeholder="PBANKA_1465921
+                <textarea class="form-control" id="gene-list" name="gene-list" placeholder="PBANKA_1465921
 PBANKA_000050
 PBANKA_1466100">{% for gene_id in gene_ids %}{{ gene_id }}
 {% endfor %}</textarea>
