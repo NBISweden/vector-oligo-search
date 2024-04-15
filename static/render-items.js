@@ -69,7 +69,7 @@ function renderItems(items, pageSize, pageNumber, targetId) {
 `<li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>`
   );
   const paginationTemplate = (
-`<nav aria-label="Page navigation">
+`<nav aria-label="Page navigation" class="my-3">
   <ul class="pagination justify-content-center">
     {{{paginationItems}}}
     <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
