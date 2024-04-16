@@ -86,7 +86,7 @@ function renderItems(items, pageSize, pageNumber, targetId) {
       label: label,
       ...(
         inPageRange(pn) ? {
-          href: `#?page=${pn}`,
+          href: `#?page=${pn}&pageSize=${pageSize}`,
           active: pn === pageNumber ? "active" : ""
         } : {
           disabled: "disabled",
@@ -124,6 +124,6 @@ function updatePageState() {
   const queryString = window.location.hash.replace("#", "");
   const urlParams = new URLSearchParams(queryString);
   const selectedPage = urlParams.get("page") || 0;
-  const pageSize = Math.max(urlParams.get("pageSize") || 10, 5);
+  const pageSize = Math.max(urlParams.get("pageSize") || 12, 6);
   renderItems(items, pageSize, selectedPage, "item-view");
 }
