@@ -79,7 +79,7 @@ function renderItems(items, pageSize, pageNumber, targetId) {
 
 function getTemplate(templateId) {
   try {
-    return document.getElementById(templateId).innerHTML;
+    return document.getElementById(templateId).innerHTML.trim();
   } catch (e) {
     throw new Error(`Unable to load template with id "${templateId}"`)
   }
