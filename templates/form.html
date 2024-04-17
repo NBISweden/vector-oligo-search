@@ -9,29 +9,16 @@
       <div class="col-sm-6">
         <fieldset class="form-group">
           <legend style="font-size:20px" class="border-bottom mb-4">Genes</legend>
-          <!-- This is for gene ids   -->
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="gene-id">Gene identifier</label>
-              <div class="col-sm-9">
-                <input class="form-control ui-autocomplete-input" id="gene-id" name="gene-id" placeholder="PBANKA_XXXXXXX" type="text" value="">
-                <datalist id="gene-id-list">
-                  <option value="PBANKA_1034300"></option>
-                  <option value="PBANKA_1231600"></option>
-                  <option value="PBANKA_1437500"></option>
-                  <option value="PBANKA_1015500"></option>
-                  <option value="PBANKA_1319700"></option>
-                </datalist>
-              </div>
-          </div>
-
-          <!-- This is for gene list   -->
-
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="gene-list">Gene identifier(s)</label>
             <div class="col-sm-9">
-                <textarea class="form-control" id="gene-list" name="gene-list" placeholder="PBANKA_1465921
-PBANKA_000050
-PBANKA_1466100">{% for gene_id in gene_ids %}{{ gene_id }}
+                <textarea class="form-control" id="gene-list" name="gene-list" placeholder="PBANKA_1414600
+PBANKA_0206400
+PBANKA_1451800
+PBANKA_1339000
+PBANKA_0106700
+PBANKA_0408600
+PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
 {% endfor %}</textarea>
             </div>
           </div>
