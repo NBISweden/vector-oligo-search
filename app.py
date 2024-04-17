@@ -37,7 +37,7 @@ def parse_gene_ids(gene_id=None, gene_list=None):
         gene_ids if len(gene_list) == 0
         else [g.strip().rstrip('\r\n') for g in gene_list.split("\n")]
     )
-    return list(set(gene_ids))
+    return list(set(gene_id for gene_id in gene_ids if gene_id))
 
 
 @app.route('/search', methods=['POST', 'GET'])
