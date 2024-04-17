@@ -14,6 +14,7 @@ from search.oligo_search import (
 from search.search import SearchError, stream_to_base64_url
 import frontmatter
 import markdown
+from markdown.extensions.toc import TocExtension
 
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,10 @@ def page(page_id):
     try:
         with open(page_path, "r") as f:
             page_data = frontmatter.load(f)
-            html = markdown.markdown(page_data.content)
+            html = markdown.markdown(
+                page_data.content,
+                extensions=[TocExtension(baselevel=1)]
+            )
             return render_template(
                 'page.html',
                 content=html,
