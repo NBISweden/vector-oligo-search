@@ -38,12 +38,16 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
   {% else %}
     {% if output %}
       <hr/>
-      {% raw %}
+      <script id="list-view-template" type="x-tmpl-mustache">
+        {% raw %}{{{paginationView}}}
+        {{{listItems}}}
+        {{{paginationView}}}{% endraw %}
+      </script>
       <script id="annotation-template" type="x-tmpl-mustache">
-        <span class="annotated-sequence break-all" data-annotation="{{ label }}">{{ sequence }}</span>
+        {% raw %}<span class="annotated-sequence break-all" data-annotation="{{ label }}">{{ sequence }}</span>{% endraw %}
       </script>
       <script id="row-template" type="x-tmpl-mustache">
-        <div class="row my-lg-5 my-sm-2">
+        {% raw %}<div class="row my-lg-5 my-sm-2">
           <h3>{{ gene_id }}</h3>
           <div class="accordion" id="accordion-{{ index }}">
             <div class="accordion-item">
@@ -75,20 +79,19 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
               </div>
             </div>
           </div>
-        </div>
+        </div>{% endraw %}
       </script>
       <script id="pagination-item-template" type="x-tmpl-mustache">
-        <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>
+        {% raw %}<li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>{% endraw %}
       </script>
       <script id="pagination-template" type="x-tmpl-mustache">
-        <nav aria-label="Page navigation" class="my-3">
+        {% raw %}<nav aria-label="Page navigation" class="my-3">
           <ul class="pagination justify-content-center">
             {{{paginationItems}}}
             <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
           </ul>
-        </nav>
+        </nav>{% endraw %}
       </script>
-      {% endraw %}
       <div class="container-fluid px-lg-5">
         <h2>Search results</h2>
         {% for file in files %}

@@ -2,7 +2,8 @@ function renderItems(items, pageSize, pageNumber, targetId) {
   const annotationTemplate = getTemplate("annotation-template");
   const rowTemplate = getTemplate("row-template");
   const paginationItemTemplate = getTemplate("pagination-item-template");
-  const paginationTemplate = getTemplate("pagination-template")
+  const paginationTemplate = getTemplate("pagination-template");
+  const listViewTemplate = getTemplate("list-view-template")
 
   const pageCount = Math.ceil(items.length / pageSize);
   pageNumber = Math.min(pageCount - 1, pageNumber);
@@ -29,7 +30,7 @@ function renderItems(items, pageSize, pageNumber, targetId) {
     })
   )
 
-  const pageView = processedItems.map(item => Mustache.render(rowTemplate, item)).join("\n");
+  const listItems = processedItems.map(item => Mustache.render(rowTemplate, item)).join("\n");
   const maxListedPages = 5;
   const pageGroupStart = Math.floor(pageNumber / maxListedPages) * maxListedPages;
   const listedPages = Math.min(pageCount, maxListedPages);
@@ -74,7 +75,14 @@ function renderItems(items, pageSize, pageNumber, targetId) {
       pageCount: pageCount
     }
   )
-  document.getElementById(targetId).innerHTML = [paginationView, pageView, paginationView].join("\n");
+  const listView = Mustache.render(
+    listViewTemplate,
+    {
+      paginationView,
+      listItems
+    }
+  )
+  document.getElementById(targetId).innerHTML = listView;
 }
 
 function getTemplate(templateId) {
