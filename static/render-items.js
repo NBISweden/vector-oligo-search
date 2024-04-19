@@ -1,12 +1,34 @@
-function renderItems(items, pageSize, pageNumber, targetId) {
-  const annotationTemplate = getTemplate("annotation-template");
-  const rowTemplate = getTemplate("row-template");
-  const paginationItemTemplate = getTemplate("pagination-item-template");
-  const paginationTemplate = getTemplate("pagination-template");
-  const listViewTemplate = getTemplate("list-view-template")
+function renderItems(state, targetId, templateIds={}) {
+  const {
+    items,
+    pageSize,
+    selectedPage,
+    viewType,
+  } = state;
+  defaultTemplateIds = {
+    annotationTemplate: "annotation-template",
+    rowTemplate: "row-template",
+    paginationItemTemplate: "pagination-item-template",
+    paginationTemplate: "pagination-template",
+    listViewTemplate: "list-view-template",
+  }
+  templateIds = {
+    ...defaultTemplateIds,
+    ...templateIds,
+  };
+  const {
+    annotationTemplate,
+    rowTemplate,
+    paginationItemTemplate,
+    paginationTemplate,
+    listViewTemplate,
+  } = Object.keys(defaultTemplateIds).reduce((acc, templateKey) => {
+    acc[templateKey] = getTemplate(templateIds[templateKey]);
+    return acc;
+  }, {});
 
   const pageCount = Math.ceil(items.length / pageSize);
-  pageNumber = Math.min(pageCount - 1, pageNumber);
+  pageNumber = Math.min(pageCount - 1, selectedPage);
   const start = pageSize * pageNumber;
   const end = start + pageSize;
   const selectedItems = items.slice(start, end)
@@ -44,7 +66,7 @@ function renderItems(items, pageSize, pageNumber, targetId) {
       label: label,
       ...(
         inPageRange(pn) ? {
-          href: `#?page=${pn}&pageSize=${pageSize}`,
+          href: `#?page=${pn}&pageSize=${pageSize}&view=${viewType}`,
           active: pn === pageNumber ? "active" : ""
         } : {
           disabled: "disabled",
@@ -96,7 +118,19 @@ function getTemplate(templateId) {
 function updatePageState() {
   const queryString = window.location.hash.replace("#", "");
   const urlParams = new URLSearchParams(queryString);
+  const viewType = {
+    "base": "accordion",
+    "table": "table"
+  }[urlParams.get("view")] || "accordion";
   const selectedPage = urlParams.get("page") || 0;
   const pageSize = Math.max(urlParams.get("pageSize") || 12, 6);
-  renderItems(items, pageSize, selectedPage, "item-view");
+  renderItems(
+    {items, pageSize, selectedPage, viewType},
+    "item-view",
+    {
+      listViewTemplate: `${viewType}-list-view-template`,
+      annotationTemplate: `${viewType}-annotation-template`,
+      rowTemplate: `${viewType}-row-template`,
+    }
+  );
 }
