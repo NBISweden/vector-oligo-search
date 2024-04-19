@@ -8,6 +8,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip3 install -r requirements.txt
 
 COPY ./pages /app/pages
+COPY ./static /app/static
 COPY ./CHANGELOG.md /app/pages/changelog.md
 COPY ./resources /app/resources
 COPY ./search /app/search
