@@ -2,9 +2,7 @@ services:
   web:
     build:
       context: .
-      target: dev
+      target: prod
     stop_signal: SIGINT
     ports:
       - '127.0.0.1:5000:5000'
-    volumes:
-      - ./:/app
