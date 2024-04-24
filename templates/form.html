@@ -43,7 +43,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
         <nav aria-label="Page navigation" class="my-3">
           <ul class="pagination justify-content-center">
             {{#paginationItems}}
-            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
             {{/paginationItems}}
             <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
           </ul>
@@ -86,7 +86,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
         <nav aria-label="Page navigation" class="my-3">
           <ul class="pagination justify-content-center">
             {{#paginationItems}}
-            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
             {{/paginationItems}}
             <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
           </ul>
@@ -96,7 +96,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
         {% raw %}<nav aria-label="Page navigation" class="my-3">
           <ul class="pagination justify-content-center">
             {{#paginationItems}}
-            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
             {{/paginationItems}}
             <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
           </ul>
@@ -120,28 +120,33 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
         <nav aria-label="Page navigation" class="my-3">
           <ul class="pagination justify-content-center">
             {{#paginationItems}}
-            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="{{href}}">{{label}}</a></li>
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
             {{/paginationItems}}
             <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
           </ul>
         </nav>{% endraw %}
+      </script>
+      <script id="view-type-view-template" type="x-tmpl-mustache">
+        {% raw %}<div class="btn-group" role="group" aria-label="View type">
+          {{#viewTypes}}
+          <a class="btn btn-primary {{active}}" href="#?page={{currentPageNumber}}&pageSize={{pageSize}}&view={{id}}"><i class="{{icon}}"></i></a>
+          {{/viewTypes}}
+        </div>{% endraw %}
       </script>
       <div class="container-fluid px-lg-5">
         <h2>Search results</h2>
         {% for file in files %}
         <a class="btn buttons-html5 btn-success" download="{{ file.name }}" href="{{ file.data }}">Download {{ file.type }}</a>
         {% endfor %}
-        <div class="btn-group" role="group" aria-label="View type">
-          <a class="btn btn-primary" href="#view=base"><i class="bi-view-stacked"></i></a>
-          <a class="btn btn-primary" href="#view=table"><i class="bi-table"></i></a>
-        </div>
+        <span id="view-type-view"></span>
       </div>
       <div class="container-fluid px-lg-5" id="item-view"></div>
       <script src="/static/vendor/mustache.js"></script>
       <script src="/static/render-items.js"></script>
       <script>
         const items = {% autoescape false %}{{ output }}{% endautoescape %};
-        updatePageState()
+        const updatePageState = getPaginator(items);
+        updatePageState();
         window.addEventListener("hashchange", updatePageState)
       </script>
     {% endif %}
