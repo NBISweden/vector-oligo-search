@@ -3,15 +3,17 @@ function parsePaginationState(state) {
     items,
     pageSize,
     selectedPage,
+    igvView,
   } = state;
   const pageCount = Math.ceil(items.length / pageSize);
   pageNumber = Math.min(pageCount - 1, selectedPage);
   const start = pageSize * pageNumber;
   const end = start + pageSize;
   const listItems = items.slice(start, end).map(
-    (item, index) => ({
+    (item) => ({
       ...item,
-      index: index,
+      id: item.id,
+      active: igvView === item.id ? "active" : "",
       annotations: item.annotations.map(
         annotation => ({
           ...annotation,
@@ -85,6 +87,30 @@ function renderView(state, targetId, templateId="table-list-view-template") {
   document.getElementById(targetId).innerHTML = view;
 }
 
+function renderMockIGV(state, targetId) {
+  const {igvView} = state;
+  if (igvView !== undefined) {
+    const igvDiv = document.getElementById(targetId);
+    igvDiv.innerHTML = "";
+    const options = {
+      genome: "hg38",
+      locus: "chr8:127,736,588-127,739,371",
+      tracks: [
+        {
+            "name": "HG00103",
+            "url": "https://s3.amazonaws.com/1000genomes/data/HG00103/alignment/HG00103.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram",
+            "indexURL": "https://s3.amazonaws.com/1000genomes/data/HG00103/alignment/HG00103.alt_bwamem_GRCh38DH.20150718.GBR.low_coverage.cram.crai",
+            "format": "cram"
+        }
+      ]
+    };
+
+    igv.createBrowser(igvDiv, options).then(function (browser) {
+        console.log("Created IGV browser");
+    })
+  }
+}
+
 function getTemplate(templateId) {
   try {
     return document.getElementById(templateId).innerHTML.trim();
@@ -94,6 +120,7 @@ function getTemplate(templateId) {
 }
 
 function getPaginator(items) {
+  items = items.map((item, index) => ({...item, id: index}));
   return function() {
     const queryString = window.location.hash.replace("#", "");
     const urlParams = new URLSearchParams(queryString);
@@ -101,15 +128,20 @@ function getPaginator(items) {
       {id: "accordion", icon: "bi-view-stacked", name: "Accordion"},
       {id: "table", icon: "bi-table", name: "Table"}
     ]
-    const viewType = urlParams.get("view") || "accordion";
+    const viewType = (
+      viewTypes.filter(vt => vt.id === urlParams.get("view"))[0] ||
+      viewTypes[0]
+    ).id;
+    const igvView = urlParams.get("igvView") ? parseInt(urlParams.get("igvView")) : undefined;
     const selectedPage = urlParams.get("page") || 0;
     const pageSize = Math.max(urlParams.get("pageSize") || 12, 6);
-    const paginationState = parsePaginationState({items, pageSize, selectedPage});
+    const paginationState = parsePaginationState({items, pageSize, selectedPage, igvView});
     const viewState = parseViewState({viewType, viewTypes})
     renderView(
       {
         ...paginationState,
         ...viewState,
+        igvView
       },
       "item-view",
       `${viewType}-list-view-template`
@@ -118,9 +150,11 @@ function getPaginator(items) {
       {
         ...paginationState,
         ...viewState,
+        igvView
       },
       "view-type-view",
       "view-type-view-template"
     )
+    renderMockIGV({igvView}, "igv-view")
   }
 }

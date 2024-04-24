@@ -53,14 +53,14 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
         {{#listItems}}
         <div class="row my-lg-5 my-sm-2">
           <h3>{{ gene_id }}</h3>
-          <div class="accordion" id="accordion-{{ index }}">
+          <div class="accordion" id="accordion-{{ id }}">
             <div class="accordion-item">
               <h4 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-annotated-{{ index }}" aria-expanded="true" aria-controls="collapse-annotated-{{ index }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-annotated-{{ id }}" aria-expanded="true" aria-controls="collapse-annotated-{{ id }}">
                   Annotated sequence
                 </button>
               </h4>
-              <div id="collapse-annotated-{{ index }}" class="accordion-collapse collapse show" data-bs-parent="#accordion-{{ index }}">
+              <div id="collapse-annotated-{{ id }}" class="accordion-collapse collapse show" data-bs-parent="#accordion-{{ id }}">
                 <div class="accordion-body">
                   <p>
                     {{#annotations}}<span class="annotated-sequence break-all" aria-label="{{ label }}">{{ sequence }}</span>{{/annotations}}
@@ -70,11 +70,11 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
             </div>
             <div class="accordion-item">
               <h4 class="accordion-header">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sequence-{{ index }}" aria-expanded="true" aria-controls="collapse-sequence-{{ index }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sequence-{{ id }}" aria-expanded="true" aria-controls="collapse-sequence-{{ id }}">
                   Sequence only
                 </button>
               </h4>
-              <div id="collapse-sequence-{{ index }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ index }}">
+              <div id="collapse-sequence-{{ id }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ id }}">
                 <div class="accordion-body">
                   <p>
                     <span class="annotated-sequence break-all" aria-label="Oligo sequence">{{ sequence }}</span>
@@ -106,6 +106,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
         <table class="table">
           <thead>
             <tr>
+              <th scope="col">IGV</th>
               <th scope="col">Gene ID</th>
               <th scope="col">Annotated Oligo Sequence</th>
             </tr>
@@ -113,6 +114,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
           <tbody>
           {{#listItems}}
             <tr>
+              <td><a class="btn btn-primary {{active}}" href="#?page={{currentPageNumber}}&pageSize={{pageSize}}&view={{viewType}}&igvView={{id}}"><i class="bi-eye"></i></a></td>
               <td>{{ gene_id }}</td>
               <td>{{#annotations}}<span class="annotated-sequence break-all" aria-label="{{ label }}">{{ sequence }}</span>{{/annotations}}</td>
             </tr>
@@ -142,12 +144,14 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
         {% endfor %}
         <span id="view-type-view"></span>
       </div>
+      <div class="container-fluid px-lg-5" id="igv-view"></div>
       <div class="container-fluid px-lg-5" id="item-view"></div>
       <script src="/static/vendor/mustache.js"></script>
+      <script src="/static/vendor/igv.min.js"></script>
       <script src="/static/render-items.js"></script>
       <script>
-        const items = {% autoescape false %}{{ output }}{% endautoescape %};
-        const updatePageState = getPaginator(items);
+        const searchResults = {% autoescape false %}{{ output }}{% endautoescape %};
+        const updatePageState = getPaginator(searchResults);
         updatePageState();
         window.addEventListener("hashchange", updatePageState)
       </script>
