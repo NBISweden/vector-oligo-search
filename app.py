@@ -14,6 +14,7 @@ from search.oligo_search import (
 from search.search import SearchError, stream_to_base64_url
 import frontmatter
 import markdown
+from markdown.extensions.toc import TocExtension
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +37,7 @@ def parse_gene_ids(gene_id=None, gene_list=None):
         gene_ids if len(gene_list) == 0
         else [g.strip().rstrip('\r\n') for g in gene_list.split("\n")]
     )
-    return list(set(gene_ids))
+    return list(set(gene_id for gene_id in gene_ids if gene_id))
 
 
 @app.route('/search', methods=['POST', 'GET'])
@@ -95,7 +96,10 @@ def page(page_id):
     try:
         with open(page_path, "r") as f:
             page_data = frontmatter.load(f)
-            html = markdown.markdown(page_data.content)
+            html = markdown.markdown(
+                page_data.content,
+                extensions=[TocExtension(baselevel=1)]
+            )
             return render_template(
                 'page.html',
                 content=html,

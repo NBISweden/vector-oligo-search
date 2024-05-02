@@ -9,29 +9,16 @@
       <div class="col-sm-6">
         <fieldset class="form-group">
           <legend style="font-size:20px" class="border-bottom mb-4">Genes</legend>
-          <!-- This is for gene ids   -->
-          <div class="form-group row">
-            <label class="col-sm-3 col-form-label" for="gene-id">Gene identifier</label>
-              <div class="col-sm-9">
-                <input class="form-control ui-autocomplete-input" id="gene-id" name="gene-id" placeholder="PBANKA_XXXXXXX" type="text" value="">
-                <datalist id="gene-id-list">
-                  <option value="PBANKA_1034300"></option>
-                  <option value="PBANKA_1231600"></option>
-                  <option value="PBANKA_1437500"></option>
-                  <option value="PBANKA_1015500"></option>
-                  <option value="PBANKA_1319700"></option>
-                </datalist>
-              </div>
-          </div>
-
-          <!-- This is for gene list   -->
-
           <div class="form-group row">
             <label class="col-sm-3 col-form-label" for="gene-list">Gene identifier(s)</label>
             <div class="col-sm-9">
-                <textarea class="form-control" id="gene-list" name="gene-list" placeholder="PBANKA_1465921
-PBANKA_000050
-PBANKA_1466100">{% for gene_id in gene_ids %}{{ gene_id }}
+                <textarea class="form-control" id="gene-list" name="gene-list" placeholder="PBANKA_1414600
+PBANKA_0206400
+PBANKA_1451800
+PBANKA_1339000
+PBANKA_0106700
+PBANKA_0408600
+PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
 {% endfor %}</textarea>
             </div>
           </div>
@@ -51,18 +38,115 @@ PBANKA_1466100">{% for gene_id in gene_ids %}{{ gene_id }}
   {% else %}
     {% if output %}
       <hr/>
+      <script id="accordion-list-view-template" type="x-tmpl-mustache">
+        {% raw %}
+        <nav aria-label="Page navigation" class="my-3">
+          <ul class="pagination justify-content-center">
+            {{#paginationItems}}
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
+            {{/paginationItems}}
+            <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
+          </ul>
+        </nav>
+        {{#listItems}}
+        <div class="row my-lg-5 my-sm-2">
+          <h3>{{ gene_id }}</h3>
+          <div class="accordion" id="accordion-{{ index }}">
+            <div class="accordion-item">
+              <h4 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-annotated-{{ index }}" aria-expanded="true" aria-controls="collapse-annotated-{{ index }}">
+                  Annotated sequence
+                </button>
+              </h4>
+              <div id="collapse-annotated-{{ index }}" class="accordion-collapse collapse show" data-bs-parent="#accordion-{{ index }}">
+                <div class="accordion-body">
+                  <p>
+                    {{#annotations}}<span class="annotated-sequence break-all" data-annotation="{{ label }}">{{ sequence }}</span>{{/annotations}}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h4 class="accordion-header">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-sequence-{{ index }}" aria-expanded="true" aria-controls="collapse-sequence-{{ index }}">
+                  Sequence only
+                </button>
+              </h4>
+              <div id="collapse-sequence-{{ index }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ index }}">
+                <div class="accordion-body">
+                  <p>
+                    <span class="annotated-sequence break-all" data-annotation="Oligo sequence">{{ sequence }}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/listItems}}
+        <nav aria-label="Page navigation" class="my-3">
+          <ul class="pagination justify-content-center">
+            {{#paginationItems}}
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
+            {{/paginationItems}}
+            <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
+          </ul>
+        </nav>{% endraw %}
+      </script>
+      <script id="table-list-view-template" type="x-tmpl-mustache">
+        {% raw %}<nav aria-label="Page navigation" class="my-3">
+          <ul class="pagination justify-content-center">
+            {{#paginationItems}}
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
+            {{/paginationItems}}
+            <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
+          </ul>
+        </nav>
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">Gene ID</th>
+              <th scope="col">Annotated Oligo Sequence</th>
+            </tr>
+          </thead>
+          <tbody>
+          {{#listItems}}
+            <tr>
+              <td>{{ gene_id }}</td>
+              <td>{{#annotations}}<span class="annotated-sequence break-all" data-annotation="{{ label }}">{{ sequence }}</span>{{/annotations}}</td>
+            </tr>
+          {{/listItems}}
+          </tbody>
+        </table>
+        <nav aria-label="Page navigation" class="my-3">
+          <ul class="pagination justify-content-center">
+            {{#paginationItems}}
+            <li class="page-item {{disabled}}"><a class="page-link {{active}}" href="#?page={{pageNumber}}&pageSize={{pageSize}}&view={{viewType}}">{{label}}</a></li>
+            {{/paginationItems}}
+            <li class="page-item"><span class="pagination-label"> of {{pageCount}} pages.</span></li>
+          </ul>
+        </nav>{% endraw %}
+      </script>
+      <script id="view-type-view-template" type="x-tmpl-mustache">
+        {% raw %}<div class="btn-group" role="group" aria-label="View type">
+          {{#viewTypes}}
+          <a class="btn btn-primary {{active}}" href="#?page={{currentPageNumber}}&pageSize={{pageSize}}&view={{id}}"><i class="{{icon}}"></i></a>
+          {{/viewTypes}}
+        </div>{% endraw %}
+      </script>
       <div class="container-fluid px-lg-5">
         <h2>Search results</h2>
         {% for file in files %}
-        <a class="btn buttons-csv buttons-html5 btn-success" download="{{ file.name }}" href="{{ file.data }}">Download {{ file.type }}</a>
+        <a class="btn buttons-html5 btn-success" download="{{ file.name }}" href="{{ file.data }}">Download {{ file.type }}</a>
         {% endfor %}
+        <span id="view-type-view"></span>
       </div>
       <div class="container-fluid px-lg-5" id="item-view"></div>
       <script src="/static/vendor/mustache.js"></script>
       <script src="/static/render-items.js"></script>
       <script>
         const items = {% autoescape false %}{{ output }}{% endautoescape %};
-        updatePageState()
+        const updatePageState = getPaginator(items);
+        updatePageState();
         window.addEventListener("hashchange", updatePageState)
       </script>
     {% endif %}

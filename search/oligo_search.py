@@ -120,7 +120,7 @@ def df_to_file(df, output_format="csv"):
             False
         ) as csv_zip:
             csv_zip.writestr(
-                "oligo-vector-sequences.csv",
+                "oligo-vector-sequence.csv",
                 csv_output.getvalue().decode("utf-8")
             )
         mimetype = "application/zip"
