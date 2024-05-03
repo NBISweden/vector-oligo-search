@@ -1,21 +1,42 @@
 # Vector Oligo Search
 
-Python Flask web application for running a genome vector search script.
+Python Flask/Gunicorn web application for running a genome vector search
+script.
 
-## Running as container
+## Running the development environment
 
-```
-❯ docker compose build
-❯ docker compose up
-```
+This builds and runs the service using Flask, and mounts the current
+directory as `/app` within the containter:
 
-Needs to rebuild the container after every code edit, which is a downer.
-
-## Running Directly
-
-```
-❯ pip3 install -r requirements.txt
-❯ flask --app app.py --debug run
+```shell
+$ docker compose build
+$ docker compose up -d
 ```
 
-Not quite hot-module, but instant reload on the server itself! Much better.
+The running service will be avaliable at `http://localhost:5000/`.
+
+To stop the service:
+
+```shell
+$ docker compose down
+```
+
+## Running the production environment
+
+This builds and runs the service using Gunicorn in a self-contained
+container:
+
+```shell
+$ docker build -t crispr .
+$ docker run --rm --name crispr --publish 127.0.0.1:5000:5000 -d crispr
+```
+
+Note: The auxillary script `start-prod.sh` performs these two steps.
+
+The running service will be avaliable at `http://localhost:5000/`.
+
+To stop the service:
+
+```shell
+$ docker stop crispr
+```
