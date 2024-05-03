@@ -1,0 +1,8 @@
+services:
+  web:
+    build:
+      context: .
+      target: prod
+    stop_signal: SIGINT
+    ports:
+      - 127.0.0.1:5000:5000

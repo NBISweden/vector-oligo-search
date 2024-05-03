@@ -31,12 +31,23 @@ $ docker build -t crispr:latest .
 $ docker run --rm --name crispr --publish 127.0.0.1:5000:5000 -d crispr:latest
 ```
 
-Note: The auxillary script `start-prod.sh` performs these two steps.
-
 The running service will be avaliable at `http://localhost:5000/`.
 
 To stop the service:
 
 ```shell
 $ docker stop crispr
+```
+
+Alternatively, using `docker compose`:
+
+```shell
+$ docker compose -f docker-compose.prod.yml build
+$ docker compose -f docker-compose.prod.yml up -d
+```
+
+To stop the service:
+
+```shell
+$ docker compose down
 ```
