@@ -27,8 +27,8 @@ This builds and runs the service using Gunicorn in a self-contained
 container:
 
 ```shell
-$ docker build -t crispr .
-$ docker run --rm --name crispr --publish 127.0.0.1:5000:5000 -d crispr
+$ docker build -t crispr:latest .
+$ docker run --rm --name crispr --publish 127.0.0.1:5000:5000 -d crispr:latest
 ```
 
 Note: The auxillary script `start-prod.sh` performs these two steps.
