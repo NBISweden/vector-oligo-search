@@ -13,7 +13,7 @@ ARG UID=1000
 ARG GID=1000
 RUN groupadd -g "$GID" python && useradd -u "$UID" -g "$GID" python
 
-EXPOSE 5000/tcp
+EXPOSE ${APP_PORT:-5000}/tcp
 
 FROM base AS dev
 
