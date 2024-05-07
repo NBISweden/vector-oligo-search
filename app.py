@@ -5,6 +5,7 @@ from flask import (
     json,
     redirect
 )
+import os
 import logging
 from search.oligo_search import (
     get_sequence_list,
@@ -23,7 +24,7 @@ app = Flask(
     __name__,
     static_folder="static"
 )
-app.secret_key = "myverysecretkey"
+app.secret_key = os.getenv("APP_SECRET_KEY", os.urandom(24).hex())
 Compress(app)
 
 
