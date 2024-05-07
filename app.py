@@ -16,6 +16,7 @@ from search.search import SearchError, stream_to_base64_url
 import frontmatter
 import markdown
 from markdown.extensions.toc import TocExtension
+from flask_compress import Compress
 
 
 logger = logging.getLogger(__name__)
@@ -24,6 +25,7 @@ app = Flask(
     static_folder="static"
 )
 app.secret_key = os.getenv("APP_SECRET_KEY", os.urandom(24).hex())
+Compress(app)
 
 
 @app.route('/')
