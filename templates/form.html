@@ -61,7 +61,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
               <div id="collapse-annotated-{{ index }}" class="accordion-collapse collapse show" data-bs-parent="#accordion-{{ index }}">
                 <div class="accordion-body">
                   <p>
-                    {{#annotations}}<span class="annotated-sequence break-all" data-annotation="{{ label }}">{{ sequence }}</span>{{/annotations}}
+                    {{#annotations}}<span class="annotated-sequence break-all" aria-label="{{ label }}">{{ sequence }}</span>{{/annotations}}
                   </p>
                 </div>
               </div>
@@ -75,7 +75,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
               <div id="collapse-sequence-{{ index }}" class="accordion-collapse collapse" data-bs-parent="#accordion-{{ index }}">
                 <div class="accordion-body">
                   <p>
-                    <span class="annotated-sequence break-all" data-annotation="Oligo sequence">{{ sequence }}</span>
+                    <span class="annotated-sequence break-all" aria-label="Oligo sequence">{{ sequence }}</span>
                   </p>
                 </div>
               </div>
@@ -112,7 +112,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
           {{#listItems}}
             <tr>
               <td>{{ gene_id }}</td>
-              <td>{{#annotations}}<span class="annotated-sequence break-all" data-annotation="{{ label }}">{{ sequence }}</span>{{/annotations}}</td>
+              <td>{{#annotations}}<span class="annotated-sequence break-all" aria-label="{{ label }}">{{ sequence }}</span>{{/annotations}}</td>
             </tr>
           {{/listItems}}
           </tbody>
