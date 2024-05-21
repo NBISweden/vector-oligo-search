@@ -8,110 +8,40 @@
   <link rel="stylesheet" href="/static/vendor/bootstrap-icons.min.css">
   <script src="/static/vendor/bootstrap.bundle.min.js"></script>
   {% block head %}{% endblock %}
-  <style>
-    .break-all {
-      word-break: break-all;
-    }
-    .annotated-sequence {
-      display: inline-block;
-      position: relative;
-      padding-bottom: 20px;
-      margin-bottom: 20px;
-      letter-spacing: 4px;
-      border-left: solid 2px rgba(0, 0, 0, 0);
-      border-right: solid 2px rgba(0, 0, 0, 0);
-    }
-    .annotated-sequence:first-child {
-      border-left: solid 2px rgba(0, 0, 0, 1);
-    }
-    .annotated-sequence:last-child {
-      border-right: solid 2px rgba(0, 0, 0, 1);
-    }
-    .annotated-sequence::after {
-      display: block;
-      content: "";
-      position: absolute;
-      top: calc(100% - 20px);
-      left: 1px;
-      right: 1px;
-      height: 5px;
-     /* background: #900;*/
-      border-top: solid 1px black;
-      border-left: solid 1px black;
-      border-right: solid 1px black;
-      transition: color 0.1s, background-color 0.1s, border-color 0.1s;
-      /*border-radius: 0 0 5px 5px;*/
-      overflow: hidden;
-      /*color: #fff;*/
-    }
-    .annotated-sequence:hover {
-      color: #666;
-      border-left: solid 2px rgba(200, 200, 200, 1);
-      border-right: solid 2px rgba(200, 200, 200, 1);
-    }
-    .annotated-sequence::after {
-      letter-spacing: normal;
-      content: attr(aria-label);
-      height: 20px;
-      text-align: center;
-      line-height: 20px;
-      font-size: 12px;
-    }
-    .annotated-sequence:hover::after {
-      color: black;
-      background-color: #eee;
-    }
-    
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    .pagination-label {
-      position: relative;
-      display: block;
-      padding: var(--bs-pagination-padding-y) var(--bs-pagination-padding-x);
-      font-size: var(--bs-pagination-font-size);
-      text-decoration: none;
-      background-color: var(--bs-pagination-disabled-bg);
-      border: var(--bs-pagination-border-width) solid var(--bs-pagination-disabled-bg);
-      white-space: nowrap;
-    }
-  </style>
+  <link href="/static/style.css" rel="stylesheet">
 </head>
 <body>
   <div class="content-main">
-
-    <div class="container-fluid px-lg-5">
+    <div class="container-fluid page-content px-lg-5">
       <div class="row">
         <div class="col-5 col-md-2 col-lg-1 p-3">
-          <img src="/static/img/gwcdt.svg" width="100%" height="auto">
+          <img src="/static/img/gwcdt.png" width="100%" height="auto">
         </div>
         <div class="col-2 col-md-8 col-lg-10"></div>
         <div class="col-5 col-md-2 col-lg-1 p-3">
           <img src="/static/img/umea_university.png" width="100%" height="auto">
         </div>
       </div>
+      <nav class="navbar navbar-expand-lg navbar-light px-3" style="background-color: #f0f0f0">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="/search">Search</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/page/changelog">Changelog</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
     </div>
-    
-    <nav class="navbar navbar-expand-lg navbar-light px-2 px-lg-5" style="background-color: #f0f0f0">
-      <a class="navbar-brand" href="/">Home</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-    
-      <div class="collapse navbar-collapse" id="navbarContent">
-        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-          <li class="nav-item">
-            <a class="nav-link" href="/search">Search</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/page/changelog">Changelog</a>
-          </li>
-        </ul>
-      </div>
-    </nav>
+    {% block content %}
   </div>
-  {% block content %}
   {% endblock %}
 </body>
 </html>
