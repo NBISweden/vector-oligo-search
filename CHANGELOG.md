@@ -1,3 +1,9 @@
+## 1.0.0 (2024-05-23)
+
+### Fix
+
+- improve reading experience for very wide screens
+
 ## 0.1.0-b0 (2024-05-17)
 
 ### Feat
