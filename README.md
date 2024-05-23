@@ -51,3 +51,11 @@ To stop the service:
 ```shell
 $ docker compose down
 ```
+
+## Using the public image
+The image is built from either the `main` branch or any tag. Tags are created for each release and the tag `latest` will always point to the same commit as the latest released version.
+
+To use an image you can access it from githubs registry as follows:
+```sh
+docker pull ghcr.io/nbisweden/vector-oligo-search:main
+```
