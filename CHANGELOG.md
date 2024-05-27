@@ -1,3 +1,9 @@
+## 1.0.1 (2024-05-27)
+
+### Fix
+
+- use search page as start page
+
 ## 1.0.0 (2024-05-23)
 
 ### Fix
