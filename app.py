@@ -28,9 +28,20 @@ app.secret_key = os.getenv("APP_SECRET_KEY", os.urandom(24).hex())
 Compress(app)
 
 
+def get_page(page_id: str):
+    page_path = f'pages/{page_id}.md'
+    with open(page_path, "r") as f:
+        page_data = frontmatter.load(f)
+        html = markdown.markdown(
+            page_data.content,
+            extensions=[TocExtension(baselevel=1)]
+        )
+        return (html, page_data)
+
+
 @app.route('/')
 def root():
-    return redirect("page/home")
+    return redirect("search")
 
 
 def parse_gene_ids(gene_id=None, gene_list=None):
@@ -71,9 +82,13 @@ def form():
         except SearchError as e:
             error = str(e)
             status_code = 404
+    
+    (html, page_data) = get_page("search")
 
     return render_template(
         'form.html',
+        title=page_data.get('title', 'Search'),
+        content=html,
         gene_ids=gene_ids,
         output=None if output is None else json.dumps(output),
         error=error,
@@ -95,19 +110,15 @@ def form():
 
 @app.route('/page/<page_id>', methods=['GET'])
 def page(page_id):
-    page_path = f'pages/{page_id}.md'
     try:
-        with open(page_path, "r") as f:
-            page_data = frontmatter.load(f)
-            html = markdown.markdown(
-                page_data.content,
-                extensions=[TocExtension(baselevel=1)]
-            )
-            return render_template(
-                'page.html',
-                content=html,
-                title=page_data.metadata.get('title', "Default title")
-            )
+        (html, page_data) = get_page(page_id)
+        print(page_data)
+        return render_template(
+            'page.html',
+            content=html,
+            title=page_data.metadata.get('title', page_id)
+        )
+
     except FileNotFoundError:
         return render_template('404.html', url=f'page/{page_id}'), 404
 

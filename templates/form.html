@@ -1,8 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Search form{% endblock %}
+{% block title %}Vector oligo search: {{ title }}{% endblock %}
 {% block content %}
   <div class="container-fluid page-content  px-lg-5 my-3">
-    <h2>Search</h2>
+    {% autoescape false %}
+    {{ content }}
+    {% endautoescape %}
     <form
       action="/search"
       method="POST">
