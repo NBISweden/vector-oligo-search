@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
+# flake8: noqa
 
 #Load Libraries/modules
 from Bio import SeqUtils
 from Bio import SeqIO
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 import numpy as np
 from random import randint
-get_ipython().run_line_magic('matplotlib', 'inline')
+#get_ipython().run_line_magic('matplotlib', 'inline')
 
 
 #Set standard elements of the gRNA oligo into items
@@ -23,7 +24,7 @@ PstI = 'CTGCAG'
 #Read gRNA excel files as table
 
 #this file has top 3 gRNAs for each gene, read only until column C 'Total_score'
-gRNA_EuPaGDT_tag_top = pd.read_excel("./resources/selected_gRNA.CRISPR_tagging.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
+gRNA_EuPaGDT_tag_top = pd.read_excel("./resources/tag/selected_gRNA.CRISPR_tagging.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
 gRNA_EuPaGDT_tag_top[['GENE ID', 'gRNA ID','directionality']] = gRNA_EuPaGDT_tag_top.gRNA_id.str.split("_", expand = True)
 #gRNA_EuPaGDT_tag_top.rename(columns={'gRNA_id':'GENE ID'}, inplace = True)
 gRNA_EuPaGDT_tag_top['GENE ID']=gRNA_EuPaGDT_tag_top['GENE ID'].replace('PBANKA','PBANKA_', regex= True)
@@ -42,7 +43,7 @@ gRNA_EuPaGDT_tag_top['GENE ID']=gRNA_EuPaGDT_tag_top['GENE ID'].replace('PBANKA'
 #Create a DataFrame that has the Gene ID, HR1, and HR2 
 
 #Read HR1 FASTA file 
-HR1_fasta = "./resources/PbHiT_Tagging_HR1_Final.fasta"
+HR1_fasta = "./resources/tag/PbHiT_Tagging_HR1_Final.fasta"
 HR1_seq= [i for i in SeqIO.parse(HR1_fasta,'fasta')]
 
 #Store HR1 sequences into a string
@@ -57,7 +58,7 @@ for seq_record in SeqIO.parse(HR1_fasta,'fasta'):
 #print (PBANKA1)
 
 #Read HR2 FASTA file 
-HR2_fasta = "./resources/PbHiT_Tagging_HR2_Final.fasta"
+HR2_fasta = "./resources/tag/PbHiT_Tagging_HR2_Final.fasta"
 HR2_seq= [i for i in SeqIO.parse(HR2_fasta,'fasta')]
 
 #Store HR2 sequences into a string 
@@ -69,7 +70,7 @@ for seq_record in SeqIO.parse(HR2_fasta,'fasta'):
     HR2_seq.append(str(seq_record.seq))
     
 #Read HR1_rev FASTA file 
-HR1_fasta_rev = "./resources/PbHiT_Tagging_HR1_Final_rev_comp.fasta"
+HR1_fasta_rev = "./resources/tag/PbHiT_Tagging_HR1_Final_rev_comp.fasta"
 HR1_seq_rev= [i for i in SeqIO.parse(HR1_fasta_rev,'fasta')]
 
 #Store HR1 sequences into a string
@@ -84,7 +85,7 @@ for seq_record in SeqIO.parse(HR1_fasta_rev,'fasta'):
 #print (PBANKA1)
 
 #Read HR2 FASTA file 
-HR2_fasta_rev = "./resources/PbHiT_Tagging_HR2_Final_rev_comp.fasta"
+HR2_fasta_rev = "./resources/tag/PbHiT_Tagging_HR2_Final_rev_comp.fasta"
 HR2_seq_rev= [i for i in SeqIO.parse(HR2_fasta_rev,'fasta')]
 
 #Store HR2 sequences into a string 
@@ -184,7 +185,7 @@ PbHiT_HR1_Final_Rev=PbHiT_Tagging_Merge.copy()
 # Merge the two DataFrames on two common columns (e.g., 'column1' and 'column2')
 PbHiT_HR1_merge = pd.merge(PbHiT_HR1_Final_Fw, PbHiT_HR1_Final_Rev, on=['GENE ID','HR1 Sequence','HR2 Sequence','HR1 Sequence Rev','HR2 Sequence Rev','gRNA_id','gRNA_sequence','Total_score','gRNA ID','directionality'], how='inner') 
 # Save the merged DataFrame to a new CSV file
-PbHiT_HR1_merge.to_csv('merged_output.csv', index=False)
+#PbHiT_HR1_merge.to_csv('merged_output.csv', index=False)
 
 PbHiT_HR1_merge.head(20)
 
@@ -204,27 +205,28 @@ PbHiT_HR1_merge.head(10)
 #rows=len(gene_list)
 #dftest=pd.DataFrame()
 
-gene_list=['PBANKA_1112300']
-
-for x in gene_list:
+#gene_list=['PBANKA_1112300']
+def get_sequence_list(gene_list):
+    dftest=pd.DataFrame()
+    for x in gene_list:
         input_gene=x
         gene_gRNA=PbHiT_HR1_merge[PbHiT_HR1_merge['GENE ID']==input_gene]
         if not gene_gRNA.empty:
             Result1= BbsI + gene_gRNA['gRNA_sequence']+ Scaffold + gene_gRNA['HR1_Tag'] + AvrII + gene_gRNA['HR2 Sequence'] + PstI
             print(Result1)
         else:
-            print('No gRNA')
+            raise RuntimeError(f'No gRNA for {x}')
             
- #Convert Result2 into a list
+        #Convert Result2 into a list
         PbHiT_Tag_constructs=Result1.values.tolist()
     
- #Generate final oligo list
+    #Generate final oligo list
 
-PbHiT_Tag_Vector_List=pd.DataFrame()
-PbHiT_Tag_Vector_List['GENE ID']=gene_gRNA['GENE ID']
-PbHiT_Tag_Vector_List['Oligo Sequence']=PbHiT_Tag_constructs
+    PbHiT_Tag_Vector_List=pd.DataFrame()
+    PbHiT_Tag_Vector_List['GENE ID']=gene_gRNA['GENE ID']
+    PbHiT_Tag_Vector_List['Oligo Sequence']=PbHiT_Tag_constructs
 
-        
-PbHiT_Tag_Vector_List.head(10)
-PbHiT_Tag_Vector_List.to_excel("./resources/PbHiT_Tagging_test.xlsx")
+            
+    return PbHiT_Tag_Vector_List
+    #PbHiT_Tag_Vector_List.to_excel("./resources/PbHiT_Tagging_test.xlsx")
 

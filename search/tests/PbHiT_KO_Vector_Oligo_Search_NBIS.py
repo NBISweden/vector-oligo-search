@@ -45,13 +45,13 @@ def make_rc_record(record):
 
 #Reverse Complement HR1 and HR2
 
-HR1_fasta = "./resources/corrected_GENE_SEQ_WITH_100_FLANKING_BASES_HR1.fasta"
+HR1_fasta = "./resources/ko/corrected_GENE_SEQ_WITH_100_FLANKING_BASES_HR1.fasta"
 records = map(make_rc_record, SeqIO.parse(HR1_fasta, "fasta"))
-SeqIO.write(records, "./resources/HR1_rev_comp.fasta", "fasta")
+SeqIO.write(records, "./resources/ko/HR1_rev_comp.fasta", "fasta")
 
-HR2_fasta = "./resources/corrected_GENE_SEQ_WITH_100_FLANKING_BASES_HR2.fasta"
+HR2_fasta = "./resources/ko/corrected_GENE_SEQ_WITH_100_FLANKING_BASES_HR2.fasta"
 records = map(make_rc_record, SeqIO.parse(HR2_fasta, "fasta"))
-SeqIO.write(records, "./resources/HR2_rev_comp.fasta", "fasta")
+SeqIO.write(records, "./resources/ko/HR2_rev_comp.fasta", "fasta")
 
 
 # In[5]:
@@ -60,7 +60,7 @@ SeqIO.write(records, "./resources/HR2_rev_comp.fasta", "fasta")
 #Read gRNA excel files as table
 
 #this file has top 3 gRNAs for each gene, read only until column C 'Total_score'
-gRNA_EuPaGDT_top = pd.read_excel("./resources/selected_gRNA.PbHIT_KO_Test.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
+gRNA_EuPaGDT_top = pd.read_excel("./resources/ko/selected_gRNA.PbHIT_KO_Test.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
 gRNA_EuPaGDT_top[['GENE ID', 'gRNA ID','directionality']] = gRNA_EuPaGDT_top.gRNA_id.str.split("_", expand = True)
 #gRNA_EuPaGDT_top.rename(columns={'gRNA_id':'GENE ID'}, inplace = True)
 gRNA_EuPaGDT_top['GENE ID']=gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA','PBANKA_', regex= True)
@@ -81,7 +81,7 @@ gRNA_EuPaGDT_top['GENE ID']=gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA','PBANKA
 
 #Create a DataFrame that has the Gene ID, HR1, and HR2
 #Read HR1 FASTA file 
-HR1_fasta_rev = "./resources/HR1_rev_comp.fasta"
+HR1_fasta_rev = "./resources/ko/HR1_rev_comp.fasta"
 HR1_seq_rev= [i for i in SeqIO.parse(HR1_fasta_rev,'fasta')]
 
 #Store HR1 sequences into a string
@@ -96,7 +96,7 @@ for seq_record in SeqIO.parse(HR1_fasta_rev,'fasta'):
 #print (PBANKA1)
 
 #Read HR2 FASTA file 
-HR2_fasta_rev = "./resources/HR2_rev_comp.fasta"
+HR2_fasta_rev = "./resources/ko/HR2_rev_comp.fasta"
 HR2_seq_rev= [i for i in SeqIO.parse(HR2_fasta_rev,'fasta')]
 
 #Store HR2 sequences into a string 

@@ -41,7 +41,7 @@ class SearchResult:
             result = SearchResult(gene_id=gene_id)
             for key in keys:
                 value = row[key]
-                if type(value) == str:
+                if isinstance(value, str):
                     result.concat(
                         sub_sequence=value,
                         annotation=key

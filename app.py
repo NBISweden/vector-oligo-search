@@ -10,8 +10,11 @@ import logging
 from search.oligo_search import (
     get_sequence_list,
     df_to_file,
-    df_to_search_result
+    df_to_search_result,
+    get_tag_sequence,
+    get_ko_sequence
 )
+from search.annotations import Annotations
 from search.search import SearchError, stream_to_base64_url
 import frontmatter
 import markdown
@@ -54,6 +57,28 @@ def parse_gene_ids(gene_id=None, gene_list=None):
     return list(set(gene_id for gene_id in gene_ids if gene_id))
 
 
+def parse_sequence_lookup_type(sequence_lookup=None):
+    if not sequence_lookup or sequence_lookup == "KO":
+        return "KO"
+    else:
+        return "TAG"
+
+
+def get_sequence_lookup(lookup_type):
+    if lookup_type == "TAG":
+        return (
+            get_tag_sequence,
+            Annotations.OLIGO_SEQUENCE_TAG_ORDER
+        )
+    elif lookup_type == "KO":
+        return (
+            get_ko_sequence,
+            Annotations.OLIGO_SEQUENCE_KO_ORDER
+        )
+    else:
+        raise SearchError(f"Invalid lookup type: {lookup_type}")
+
+
 @app.route('/search', methods=['POST', 'GET'])
 def form():
     gene_ids = []
@@ -62,17 +87,28 @@ def form():
     status_code = 200
     csv_data = None
     xlsx_data = None
+    lookup_type = "KO"
 
     if request.method == 'POST':
         gene_ids = parse_gene_ids(
             request.form.get('gene-id'),
             request.form.get('gene-list')
         )
+        lookup_type = parse_sequence_lookup_type(
+            request.form.get('lookup-type')
+        )
 
     if len(gene_ids) > 0:
         try:
-            sequence_list_df = get_sequence_list(gene_ids)
-            output = list(df_to_search_result(sequence_list_df))
+            (
+                sequence_lookup,
+                sequence_annotations
+            ) = get_sequence_lookup(lookup_type)
+            sequence_list_df = get_sequence_list(gene_ids, sequence_lookup)
+            output = list(df_to_search_result(
+                sequence_list_df,
+                sequence_annotations
+            ))
 
             (csv, mimetype) = df_to_file(sequence_list_df, "csv")
             csv_data = stream_to_base64_url(csv, mimetype)
@@ -82,7 +118,7 @@ def form():
         except SearchError as e:
             error = str(e)
             status_code = 404
-    
+
     (html, page_data) = get_page("search")
 
     return render_template(
@@ -90,6 +126,7 @@ def form():
         title=page_data.get('title', 'Search'),
         content=html,
         gene_ids=gene_ids,
+        lookup_type=lookup_type,
         output=None if output is None else json.dumps(output),
         error=error,
         status_code=status_code,
