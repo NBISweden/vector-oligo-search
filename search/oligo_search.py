@@ -313,7 +313,7 @@ def get_tag_sequence(input_gene):
     return PbHiT_Tag_Vector_List
 
 
-def df_to_file(df, output_format="csv"):
+def df_to_file(df, output_format="csv", file_basename="oligo-vector-sequence"):
     output_data = pd.DataFrame(
         {
             'GENE ID': df['GENE ID'],
@@ -333,7 +333,7 @@ def df_to_file(df, output_format="csv"):
             False
         ) as csv_zip:
             csv_zip.writestr(
-                "oligo-vector-sequence.csv",
+                f"{file_basename}.csv",
                 csv_output.getvalue().decode("utf-8")
             )
         mimetype = "application/zip"

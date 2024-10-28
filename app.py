@@ -110,10 +110,11 @@ def form():
                 sequence_annotations
             ))
 
-            (csv, mimetype) = df_to_file(sequence_list_df, "csv")
+            file_basename = f"oligo-vector-sequence-{lookup_type}"
+            (csv, mimetype) = df_to_file(sequence_list_df, "csv", file_basename)
             csv_data = stream_to_base64_url(csv, mimetype)
 
-            (xlsx, mimetype) = df_to_file(sequence_list_df, "xlsx")
+            (xlsx, mimetype) = df_to_file(sequence_list_df, "xlsx", file_basename)
             xlsx_data = stream_to_base64_url(xlsx, mimetype)
         except SearchError as e:
             error = str(e)
@@ -132,12 +133,12 @@ def form():
         status_code=status_code,
         files=[
             {
-                "name": "oligo-vector-sequence.xlsx",
+                "name": f"{file_basename}.xlsx",
                 "data": xlsx_data,
                 "type": "XLSX"
             },
             {
-                "name": "oligo-vector-sequence.zip",
+                "name": f"{file_basename}.zip",
                 "data": csv_data,
                 "type": "CSV"
             }
