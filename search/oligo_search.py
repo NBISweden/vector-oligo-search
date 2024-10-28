@@ -350,8 +350,3 @@ def get_sequence_list(gene_ids, seq_func=get_ko_sequence):
             for gene_id in gene_ids
         ]
     )
-
-
-def search_to_file(gene_ids, output_format="csv"):
-    full_result = get_sequence_list(gene_ids)
-    return df_to_file(full_result, output_format=output_format)
