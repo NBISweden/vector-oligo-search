@@ -137,50 +137,24 @@ def load_tag_data():
     # Create a DataFrame that has the Gene ID, HR1, and HR2
 
     # Read HR1 FASTA file
-    HR1_fasta = "./resources/tag/PbHiT_Tagging_HR1_Final.fasta"
-    HR1_seq = [i for i in SeqIO.parse(HR1_fasta, 'fasta')]
-
-    # Store HR1 sequences into a string
-    genes = []
-    HR1_seq = []
-    for seq_record in SeqIO.parse(HR1_fasta, 'fasta'):
-        genes.append(seq_record.id)
-        HR1_seq.append(str(seq_record.seq))
+    (genes, HR1_seq) = _parse_HR_fasta(
+        "./resources/tag/PbHiT_Tagging_HR1_Final.fasta"
+    )
 
     # Read HR2 FASTA file
-    HR2_fasta = "./resources/tag/PbHiT_Tagging_HR2_Final.fasta"
-    HR2_seq = [i for i in SeqIO.parse(HR2_fasta, 'fasta')]
-
-    # Store HR2 sequences into a string
-    genes = []
-    HR2_seq = []
-
-    for seq_record in SeqIO.parse(HR2_fasta, 'fasta'):
-        genes.append(seq_record.id)
-        HR2_seq.append(str(seq_record.seq))
+    (genes, HR2_seq) = _parse_HR_fasta(
+        "./resources/tag/PbHiT_Tagging_HR2_Final.fasta"
+    )
 
     # Read HR1_rev FASTA file
-    HR1_fasta_rev = "./resources/tag/PbHiT_Tagging_HR1_Final_rev_comp.fasta"
-    HR1_seq_rev = [i for i in SeqIO.parse(HR1_fasta_rev, 'fasta')]
+    (genes, HR1_seq_rev) = _parse_HR_fasta(
+        "./resources/tag/PbHiT_Tagging_HR1_Final_rev_comp.fasta"
+    )
 
-    # Store HR1 sequences into a string
-    genes = []
-    HR1_seq_rev = []
-    for seq_record in SeqIO.parse(HR1_fasta_rev, 'fasta'):
-        genes.append(seq_record.id)
-        HR1_seq_rev.append(str(seq_record.seq))
-
-    # Read HR2 FASTA file
-    HR2_fasta_rev = "./resources/tag/PbHiT_Tagging_HR2_Final_rev_comp.fasta"
-    HR2_seq_rev = [i for i in SeqIO.parse(HR2_fasta_rev, 'fasta')]
-
-    # Store HR2 sequences into a string
-    genes = []
-    HR2_seq_rev = []
-
-    for seq_record in SeqIO.parse(HR2_fasta_rev, 'fasta'):
-        genes.append(seq_record.id)
-        HR2_seq_rev.append(str(seq_record.seq))
+    # Read HR2_rev FASTA file
+    (genes, HR2_seq_rev) = _parse_HR_fasta(
+        "./resources/tag/PbHiT_Tagging_HR2_Final_rev_comp.fasta"
+    )
 
     # Generate table with Genes, HR1, HR2
     pHIT_Tag_HR = pd.DataFrame({
@@ -244,6 +218,19 @@ def load_tag_data():
         PbHiT_HR1_merge['Extracted_Sequence_y']
     )
     return [PbHiT_HR1_merge]
+
+
+def _parse_HR_fasta(file_path):
+    # Parse a fasta file to a string list and extract gene list
+    entries = [
+        (seq_record.id, str(seq_record.seq))
+        for seq_record in SeqIO.parse(file_path, 'fasta')
+    ]
+    (genes, sequence) = zip(*entries)
+    return (
+        list(genes),
+        list(sequence)
+    )
 
 
 def _extract_sequence(row, search_column, target_column, extract_length=100):
