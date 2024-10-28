@@ -23,6 +23,7 @@ PstI = 'CTGCAG'
 
 @lru_cache
 def load_ko_data():
+    logger.info("Loading KO data")
     # Read gRNA excel files as table
     # this file has top 3 gRNAs for each gene,
     # read only until column C 'Total_score'
@@ -108,11 +109,13 @@ def get_ko_sequence(input_gene):
             + PbHOT_KO_Vector_List[annotation]
         )
 
+    logger.info("KO data loaded")
     return PbHOT_KO_Vector_List
 
 
 @lru_cache
 def load_tag_data():
+    logger.info("Loading TAG data")
     # Read gRNA excel files as table
 
     # this file has top 3 gRNAs for each gene,
@@ -217,6 +220,7 @@ def load_tag_data():
         PbHiT_HR1_merge['Extracted_Sequence_x'].fillna('') +
         PbHiT_HR1_merge['Extracted_Sequence_y']
     )
+    logger.info("TAG data loaded")
     return [PbHiT_HR1_merge]
 
 
