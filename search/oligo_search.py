@@ -83,11 +83,11 @@ def get_ko_sequence(input_gene):
     ] = load_ko_data()
     gene_gRNA = gRNA_EuPaGDT_top[gRNA_EuPaGDT_top['GENE ID'] == input_gene]
     if gene_gRNA.empty:
-        raise SearchError(f'No gRNA found for: {input_gene}')
+        raise SearchError(f'No KO construct found:No gRNA found for: {input_gene}')
 
     gene_HR = pHIT_KO_HR[pHIT_KO_HR['GENE ID'] == input_gene]
     if gene_HR.empty:
-        raise SearchError(f'No gene found for: {input_gene}')
+        raise SearchError(f'No KO construct found: No gene found for: {input_gene}')
 
     gene_gRNA_top2 = gene_gRNA.iloc[:3]
 
@@ -281,7 +281,7 @@ def get_tag_sequence(input_gene):
     gene_gRNA = PbHiT_HR1_merge[PbHiT_HR1_merge['GENE ID'] == input_gene]
 
     if gene_gRNA.empty:
-        raise SearchError(f'No gRNA found for: {input_gene}')
+        raise SearchError(f'No tagging construct found: No gRNA found for: {input_gene}')
 
     PbHiT_Tag_Vector_List = pd.DataFrame({
         'Oligo sequence': "",
