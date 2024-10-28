@@ -88,6 +88,7 @@ def form():
     csv_data = None
     xlsx_data = None
     lookup_type = "KO"
+    file_basename = "oligo-vector-sequence"
 
     if request.method == 'POST':
         gene_ids = parse_gene_ids(
@@ -110,7 +111,7 @@ def form():
                 sequence_annotations
             ))
 
-            file_basename = f"oligo-vector-sequence-{lookup_type}"
+            file_basename = f"{file_basename}-{lookup_type}"
             (csv, mimetype) = df_to_file(sequence_list_df, "csv", file_basename)
             csv_data = stream_to_base64_url(csv, mimetype)
 
