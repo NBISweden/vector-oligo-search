@@ -1,3 +1,19 @@
+## 1.1.0 (2024-10-30)
+
+### Feat
+
+- add initial implementation of tag sequence search
+
+### Fix
+
+- make sure file_basename is defined when it is used
+- indicate which lookup type is used in search errors
+- add lookup type to download file name
+
+### Refactor
+
+- clean up data loading for tag resources
+
 ## 1.0.1 (2024-05-27)
 
 ### Fix
