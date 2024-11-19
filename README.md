@@ -11,7 +11,8 @@ directory as `/app` within the containter:
 
 ```shell
 $ docker compose build
-$ docker compose up -d
+$ docker compose --profile dev up -d
+$ docker compose --profile prod up -d
 ```
 
 The running service will be avaliable at `http://localhost:5000/`.
