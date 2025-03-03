@@ -1,3 +1,9 @@
+## 1.2.0 (2025-03-03)
+
+### Feat
+
+- add support for custom message per page
+
 ## 1.1.1 (2024-11-07)
 
 ### Fix
