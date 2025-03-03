@@ -3,7 +3,8 @@ from flask import (
     request,
     render_template,
     json,
-    redirect
+    redirect,
+    current_app,
 )
 import os
 import logging
@@ -28,18 +29,36 @@ app = Flask(
     static_folder="static"
 )
 app.secret_key = os.getenv("APP_SECRET_KEY", os.urandom(24).hex())
+app.config["MESSAGE_ROOT"] = os.getenv("APP_MESSAGE_ROOT", "/home/vector_oligo_search")
 Compress(app)
 
 
-def get_page(page_id: str):
-    page_path = f'pages/{page_id}.md'
-    with open(page_path, "r") as f:
+def load_markdown(path: str):
+    with open(path, "r") as f:
         page_data = frontmatter.load(f)
         html = markdown.markdown(
             page_data.content,
             extensions=[TocExtension(baselevel=1)]
         )
         return (html, page_data)
+
+
+def get_page(page_id: str):
+    page_path = f'pages/{page_id}.md'
+    return load_markdown(page_path)
+
+
+def get_message(msg_id: str):
+    try:
+        message_root = current_app.config["MESSAGE_ROOT"]
+        message_path = f'{message_root}/{msg_id}.md'
+        (html, page_data) = load_markdown(message_path)
+        return {
+            'content': html,
+            'type': page_data.get('type', 'warning')
+        }
+    except (KeyError, FileNotFoundError) as e:
+        return None
 
 
 @app.route('/')
@@ -90,6 +109,8 @@ def form():
     lookup_type = "KO"
     file_basename = "oligo-vector-sequence"
 
+    message = get_message("search")
+
     if request.method == 'POST':
         gene_ids = parse_gene_ids(
             request.form.get('gene-id'),
@@ -132,6 +153,7 @@ def form():
         output=None if output is None else json.dumps(output),
         error=error,
         status_code=status_code,
+        message=message,
         files=[
             {
                 "name": f"{file_basename}.xlsx",
@@ -150,12 +172,13 @@ def form():
 @app.route('/page/<page_id>', methods=['GET'])
 def page(page_id):
     try:
+        message = get_message(f'page/{page_id}')
         (html, page_data) = get_page(page_id)
-        print(page_data)
         return render_template(
             'page.html',
             content=html,
-            title=page_data.metadata.get('title', page_id)
+            title=page_data.metadata.get('title', page_id),
+            message=message,
         )
 
     except FileNotFoundError:

@@ -41,6 +41,15 @@
         </div>
       </nav>
     </div>
+    {% if message %}
+    <div class="container-fluid page-content px-lg-5 my-3">
+      <div class="alert alert-{{message.type}}" role="alert">
+        {% autoescape false %}
+        {{message.content}}
+        {% endautoescape %}
+      </div>
+    </div>
+    {% endif %}
     {% block content %}
   </div>
   {% endblock %}
