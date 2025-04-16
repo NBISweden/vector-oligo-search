@@ -16,7 +16,7 @@ from search.oligo_search import (
     get_ko_sequence
 )
 from search.annotations import Annotations
-from search.search import SearchError, stream_to_base64_url
+from search.search import SearchError, stream_to_base64_url, SearchResult
 import frontmatter
 import markdown
 from markdown.extensions.toc import TocExtension
@@ -83,16 +83,37 @@ def parse_sequence_lookup_type(sequence_lookup=None):
         return "TAG"
 
 
+def get_ko_row_parser():
+    forward_row_parser = SearchResult.get_key_row_parser(
+        Annotations.OLIGO_SEQUENCE_KO_ORDER_FW
+    )
+    reverse_row_parser = SearchResult.get_key_row_parser(
+        Annotations.OLIGO_SEQUENCE_KO_ORDER_REV
+    )
+
+    def _parse_row(row):
+        strand = row['Strand']
+        return (
+            forward_row_parser(row)
+            if strand == '+'
+            else reverse_row_parser(row)
+        )
+
+    return _parse_row
+
+
 def get_sequence_lookup(lookup_type):
     if lookup_type == "TAG":
         return (
             get_tag_sequence,
-            Annotations.OLIGO_SEQUENCE_TAG_ORDER
+            SearchResult.get_key_row_parser(
+                Annotations.OLIGO_SEQUENCE_TAG_ORDER
+            )
         )
     elif lookup_type == "KO":
         return (
             get_ko_sequence,
-            Annotations.OLIGO_SEQUENCE_KO_ORDER
+            get_ko_row_parser()
         )
     else:
         raise SearchError(f"Invalid lookup type: {lookup_type}")

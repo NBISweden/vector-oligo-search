@@ -35,18 +35,31 @@ class SearchResult:
         self.sequence += sub_sequence
 
     @staticmethod
-    def from_df(df, keys):
+    def from_df(df, parse_row):
         for (index, row) in df.iterrows():
-            gene_id = row['GENE ID']
+            gene_id, items = parse_row(row)
             result = SearchResult(gene_id=gene_id)
-            for key in keys:
-                value = row[key]
+            for key, value in items:
                 if isinstance(value, str):
                     result.concat(
                         sub_sequence=value,
                         annotation=key
                     )
             yield result
+
+    @staticmethod
+    def get_key_row_parser(keys):
+        def _parse_row(row):
+            gene_id = row['GENE ID']
+            return (
+                gene_id,
+                [
+                    (key, row[key])
+                    for key in keys
+                ]
+            )
+
+        return _parse_row
 
 
 def stream_to_base64_url(file_data, mime_type):

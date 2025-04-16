@@ -40,36 +40,10 @@ def load_ko_data():
         gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA', 'PBANKA_', regex=True)
     )
 
-    # Create a DataFrame that has the Gene ID, HR1, and HR2
-    # Read HR1 FASTA file
-    HR1_fasta_rev = "./resources/ko/HR1_rev_comp.fasta"
-    HR1_seq_rev = [i for i in SeqIO.parse(HR1_fasta_rev, 'fasta')]
+    # Load table with Genes, HR1, HR2
+    pHIT_KO_HR = pHIT_KO_HR = pd.read_excel("./resources/ko/PbHiT_KO_Vector_HR_List_April16_RE.xlsx")
 
-    # Store HR1 sequences into a string
-    genes = []
-    HR1_seq_rev = []
-    for seq_record in SeqIO.parse(HR1_fasta_rev, 'fasta'):
-        genes.append(seq_record.id)
-        HR1_seq_rev.append(str(seq_record.seq))
-
-    # Read HR2 FASTA file
-    HR2_fasta_rev = "./resources/ko/HR2_rev_comp.fasta"
-    HR2_seq_rev = [i for i in SeqIO.parse(HR2_fasta_rev, 'fasta')]
-
-    # Store HR2 sequences into a string
-    genes = []
-    HR2_seq_rev = []
-
-    for seq_record in SeqIO.parse(HR2_fasta_rev, 'fasta'):
-        genes.append(seq_record.id)
-        HR2_seq_rev.append(str(seq_record.seq))
-
-    # Generate table with Genes, HR1, HR2
-    pHIT_KO_HR = pd.DataFrame({
-        "GENE ID": genes,
-        "HR1 Sequence": HR1_seq_rev,
-        "HR2 Sequence": HR2_seq_rev
-    })
+    logger.info("KO data loaded")
     return [
         pHIT_KO_HR,
         gRNA_EuPaGDT_top
@@ -91,25 +65,37 @@ def get_ko_sequence(input_gene):
 
     gene_gRNA_top2 = gene_gRNA.iloc[:3]
 
+    strand = gene_HR['strand_x'].to_list()[0]
+    sequence_order = (
+        anno.OLIGO_SEQUENCE_KO_ORDER_FW
+        if strand == '+'
+        else anno.OLIGO_SEQUENCE_KO_ORDER_REV
+    )
+    hr_variant = (
+        "Fw"
+        if strand == '+'
+        else "Rev"
+    )
+
     PbHOT_KO_Vector_List = pd.DataFrame({
         'Oligo sequence': "",
         'GENE ID': input_gene,
         anno.BBS_I: BbsI,
         anno.GRNA: gene_gRNA_top2['gRNA_sequence'],
         anno.SCAFFOLD: Scaffold,
-        anno.HR2: gene_HR['HR2 Sequence'].tolist()[0],
+        anno.HR2: gene_HR[f'HR2 Sequence {hr_variant}'].tolist()[0],
         anno.AVR_II: AvrII,
-        anno.HR1: gene_HR['HR1 Sequence'].tolist()[0],
-        anno.PST_I: PstI
+        anno.HR1: gene_HR[f'HR1 Sequence {hr_variant}'].tolist()[0],
+        anno.PST_I: PstI,
+        'Strand': strand,
     })
 
-    for annotation in anno.OLIGO_SEQUENCE_KO_ORDER:
+    for annotation in sequence_order:
         PbHOT_KO_Vector_List['Oligo sequence'] = (
             PbHOT_KO_Vector_List['Oligo sequence']
             + PbHOT_KO_Vector_List[annotation]
         )
 
-    logger.info("KO data loaded")
     return PbHOT_KO_Vector_List
 
 
@@ -339,11 +325,11 @@ def df_to_file(df, output_format="csv", file_basename="oligo-vector-sequence"):
 
 def df_to_search_result(
     df,
-    sequence_annotations=anno.OLIGO_SEQUENCE_KO_ORDER
+    parse_row
 ):
     return SearchResult.from_df(
         df,
-        sequence_annotations
+        parse_row
     )
 
 
