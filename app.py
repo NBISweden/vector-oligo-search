@@ -9,14 +9,11 @@ from flask import (
 import os
 import logging
 from search.oligo_search import (
-    get_sequence_list,
     df_to_file,
-    df_to_search_result,
-    get_tag_sequence,
-    get_ko_sequence
+    TagSearchContext,
+    KOSearchContext
 )
-from search.annotations import Annotations
-from search.search import SearchError, stream_to_base64_url, SearchResult
+from search.search import SearchError, stream_to_base64_url
 import frontmatter
 import markdown
 from markdown.extensions.toc import TocExtension
@@ -83,38 +80,11 @@ def parse_sequence_lookup_type(sequence_lookup=None):
         return "TAG"
 
 
-def get_ko_row_parser():
-    forward_row_parser = SearchResult.get_key_row_parser(
-        Annotations.OLIGO_SEQUENCE_KO_ORDER_FW
-    )
-    reverse_row_parser = SearchResult.get_key_row_parser(
-        Annotations.OLIGO_SEQUENCE_KO_ORDER_REV
-    )
-
-    def _parse_row(row):
-        strand = row['Strand']
-        return (
-            forward_row_parser(row)
-            if strand == '+'
-            else reverse_row_parser(row)
-        )
-
-    return _parse_row
-
-
 def get_sequence_lookup(lookup_type):
     if lookup_type == "TAG":
-        return (
-            get_tag_sequence,
-            SearchResult.get_key_row_parser(
-                Annotations.OLIGO_SEQUENCE_TAG_ORDER
-            )
-        )
+        return TagSearchContext()
     elif lookup_type == "KO":
-        return (
-            get_ko_sequence,
-            get_ko_row_parser()
-        )
+        return KOSearchContext()
     else:
         raise SearchError(f"Invalid lookup type: {lookup_type}")
 
@@ -143,15 +113,9 @@ def form():
 
     if len(gene_ids) > 0:
         try:
-            (
-                sequence_lookup,
-                sequence_annotations
-            ) = get_sequence_lookup(lookup_type)
-            sequence_list_df = get_sequence_list(gene_ids, sequence_lookup)
-            output = list(df_to_search_result(
-                sequence_list_df,
-                sequence_annotations
-            ))
+            search_context = get_sequence_lookup(lookup_type)
+            sequence_list_df = search_context.get_sequence_list(gene_ids)
+            output = list(search_context.get_rows(sequence_list_df))
 
             file_basename = f"{file_basename}-{lookup_type}"
             (csv, mimetype) = df_to_file(sequence_list_df, "csv", file_basename)

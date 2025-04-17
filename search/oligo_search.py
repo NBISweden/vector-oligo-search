@@ -290,6 +290,51 @@ def get_tag_sequence(input_gene):
     return PbHiT_Tag_Vector_List
 
 
+class KOSearchContext:
+    def get_sequence_list(self, gene_ids):
+        return get_sequence_list(gene_ids, get_ko_sequence)
+
+    def get_rows(self, result):
+        row_parser = KOSearchContext.get_ko_row_parser()
+        return SearchResult.from_df(
+            result,
+            row_parser
+        )
+
+    @staticmethod
+    def get_ko_row_parser():
+        forward_row_parser = SearchResult.get_key_row_parser(
+            anno.OLIGO_SEQUENCE_KO_ORDER_FW
+        )
+        reverse_row_parser = SearchResult.get_key_row_parser(
+            anno.OLIGO_SEQUENCE_KO_ORDER_REV
+        )
+
+        def _parse_row(row):
+            strand = row['Strand']
+            return (
+                forward_row_parser(row)
+                if strand == '+'
+                else reverse_row_parser(row)
+            )
+
+        return _parse_row
+
+
+class TagSearchContext:
+    def get_sequence_list(self, gene_ids):
+        return get_sequence_list(gene_ids, get_tag_sequence)
+
+    def get_rows(self, result):
+        row_parser = SearchResult.get_key_row_parser(
+            anno.OLIGO_SEQUENCE_TAG_ORDER
+        )
+        return SearchResult.from_df(
+            result,
+            row_parser
+        )
+
+
 def df_to_file(df, output_format="csv", file_basename="oligo-vector-sequence"):
     output_data = pd.DataFrame(
         {
