@@ -1,3 +1,13 @@
+## 1.2.1 (2025-04-17)
+
+### Fix
+
+- update KO calculations
+
+### Refactor
+
+- improve testability of search results and improve tests
+
 ## 1.2.0 (2025-03-03)
 
 ### Feat
