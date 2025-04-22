@@ -65,16 +65,16 @@ def get_ko_sequence(input_gene):
 
     gene_gRNA_top2 = gene_gRNA.iloc[:3]
 
-    strand = gene_HR['strand_x'].to_list()[0]
-    sequence_order = (
-        anno.OLIGO_SEQUENCE_KO_ORDER_FW
-        if strand == '+'
-        else anno.OLIGO_SEQUENCE_KO_ORDER_REV
+    use_forward_hr_pair = gene_HR['strand_x'].to_list()[0] == '+'
+    HR2 = (
+        gene_HR['HR2 Sequence Fw']
+        if use_forward_hr_pair
+        else gene_HR['HR1 Sequence Rev']
     )
-    hr_variant = (
-        "Fw"
-        if strand == '+'
-        else "Rev"
+    HR1 = (
+        gene_HR['HR1 Sequence Fw']
+        if use_forward_hr_pair
+        else gene_HR['HR2 Sequence Rev']
     )
 
     PbHOT_KO_Vector_List = pd.DataFrame({
@@ -83,14 +83,13 @@ def get_ko_sequence(input_gene):
         anno.BBS_I: BbsI,
         anno.GRNA: gene_gRNA_top2['gRNA_sequence'],
         anno.SCAFFOLD: Scaffold,
-        anno.HR2: gene_HR[f'HR2 Sequence {hr_variant}'].tolist()[0],
+        anno.HR2: HR2.tolist()[0],
         anno.AVR_II: AvrII,
-        anno.HR1: gene_HR[f'HR1 Sequence {hr_variant}'].tolist()[0],
+        anno.HR1: HR1.tolist()[0],
         anno.PST_I: PstI,
-        'Strand': strand,
     })
 
-    for annotation in sequence_order:
+    for annotation in anno.OLIGO_SEQUENCE_KO_ORDER:
         PbHOT_KO_Vector_List['Oligo sequence'] = (
             PbHOT_KO_Vector_List['Oligo sequence']
             + PbHOT_KO_Vector_List[annotation]
@@ -295,30 +294,13 @@ class KOSearchContext:
         return get_sequence_list(gene_ids, get_ko_sequence)
 
     def get_rows(self, result):
-        row_parser = KOSearchContext.get_ko_row_parser()
+        row_parser = SearchResult.get_key_row_parser(
+            anno.OLIGO_SEQUENCE_KO_ORDER
+        )
         return SearchResult.from_df(
             result,
             row_parser
         )
-
-    @staticmethod
-    def get_ko_row_parser():
-        forward_row_parser = SearchResult.get_key_row_parser(
-            anno.OLIGO_SEQUENCE_KO_ORDER_FW
-        )
-        reverse_row_parser = SearchResult.get_key_row_parser(
-            anno.OLIGO_SEQUENCE_KO_ORDER_REV
-        )
-
-        def _parse_row(row):
-            strand = row['Strand']
-            return (
-                forward_row_parser(row)
-                if strand == '+'
-                else reverse_row_parser(row)
-            )
-
-        return _parse_row
 
 
 class TagSearchContext:

@@ -10,17 +10,7 @@ class Annotations:
 
     SEQUENCE = "Sequence"
 
-    OLIGO_SEQUENCE_KO_ORDER_REV = [
-        BBS_I,
-        GRNA,
-        SCAFFOLD,
-        HR1,
-        AVR_II,
-        HR2,
-        PST_I,
-    ]
-
-    OLIGO_SEQUENCE_KO_ORDER_FW = [
+    OLIGO_SEQUENCE_KO_ORDER = [
         BBS_I,
         GRNA,
         SCAFFOLD,
