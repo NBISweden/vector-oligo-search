@@ -1,3 +1,9 @@
+## 1.2.2-rc0 (2025-04-22)
+
+### Fix
+
+- adjust annotations for KO sequence
+
 ## 1.2.1 (2025-04-17)
 
 ### Fix
