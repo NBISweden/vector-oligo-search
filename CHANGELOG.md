@@ -1,3 +1,9 @@
+## 1.3.0-rc1 (2025-04-28)
+
+### Fix
+
+- scan only for specific unique segments
+
 ## 1.3.0-rc0 (2025-04-28)
 
 ### Feat
