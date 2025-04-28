@@ -76,6 +76,11 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
                   <p>
                     {{#annotations}}<span class="annotated-sequence break-all" aria-label="{{ label }}">{{ sequence }}</span>{{/annotations}}
                   </p>
+                  {{#messages}}
+                  <div class="alert alert-{{type}}" role="alert">
+                    {{message}}
+                  </div>
+                  {{/messages}}
                 </div>
               </div>
             </div>
@@ -90,6 +95,11 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
                   <p>
                     <span class="annotated-sequence break-all" aria-label="Oligo sequence">{{ sequence }}</span>
                   </p>
+                  {{#messages}}
+                  <div class="alert alert-{{type}}" role="alert">
+                    {{message}}
+                  </div>
+                  {{/messages}}
                 </div>
               </div>
             </div>
@@ -124,7 +134,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
           <tbody>
           {{#listItems}}
             <tr>
-              <td>{{ gene_id }}</td>
+              <td>{{ gene_id }}{{#messages}}<span class="badge rounded-pill bg-{{ type }}" data-bs-toggle="tooltip" title="{{ message }}"><i class="bi bi-info-lg"></i></span>{{/messages}}</td>
               <td>{{#annotations}}<span class="annotated-sequence break-all" aria-label="{{ label }}">{{ sequence }}</span>{{/annotations}}</td>
             </tr>
           {{/listItems}}

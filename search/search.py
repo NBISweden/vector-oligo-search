@@ -1,3 +1,4 @@
+from typing import Literal
 from dataclasses import dataclass, field
 import logging
 import base64
@@ -17,10 +18,17 @@ class Annotation:
 
 
 @dataclass
+class ResultMessage:
+    message: str
+    type: Literal["info", "warning", "danger"] = "info"
+
+
+@dataclass
 class SearchResult:
     gene_id: str = None
     annotations: list[Annotation] = field(default_factory=list)
     sequence: str = ""
+    messages: list[str] = field(default_factory=list)
 
     def concat(self, sub_sequence, annotation=None):
         if annotation is not None:
@@ -34,10 +42,13 @@ class SearchResult:
             )
         self.sequence += sub_sequence
 
+    def add_message(self, message: ResultMessage):
+        self.messages.append(message)
+
     @staticmethod
     def from_df(df, parse_row):
         for (index, row) in df.iterrows():
-            gene_id, items = parse_row(row)
+            gene_id, items, status = parse_row(row)
             result = SearchResult(gene_id=gene_id)
             for key, value in items:
                 if isinstance(value, str):
@@ -45,18 +56,28 @@ class SearchResult:
                         sub_sequence=value,
                         annotation=key
                     )
+            for key, value in status.items():
+                if value > 1:
+                    result.add_message(
+                        ResultMessage(
+                            f"Multiple occurences ({value}) for {key} detected.",
+                            type="danger"
+                        )
+                    )
             yield result
 
     @staticmethod
     def get_key_row_parser(keys):
         def _parse_row(row):
             gene_id = row['GENE ID']
+            status = row['status']
             return (
                 gene_id,
                 [
                     (key, row[key])
                     for key in keys
-                ]
+                ],
+                status
             )
 
         return _parse_row
