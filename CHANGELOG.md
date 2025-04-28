@@ -1,3 +1,10 @@
+## 1.3.0-rc0 (2025-04-28)
+
+### Feat
+
+- add support for status messages on search results
+- add support for scanning for segment occurances
+
 ## 1.2.2 (2025-04-25)
 
 ### Fix
