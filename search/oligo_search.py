@@ -1,4 +1,4 @@
-from Bio import SeqIO
+from Bio import SeqIO, Seq
 import pandas as pd
 from .annotations import Annotations as anno
 from .search import SearchError, SearchResult
@@ -94,6 +94,14 @@ def get_ko_sequence(input_gene):
             PbHOT_KO_Vector_List['Oligo sequence']
             + PbHOT_KO_Vector_List[annotation]
         )
+
+    PbHOT_KO_Vector_List["status"] = PbHOT_KO_Vector_List.apply(
+        duplication_status_check(
+            'Oligo sequence',
+            anno.OLIGO_SEQUENCE_KO_ORDER
+        ),
+        axis=1
+    )
 
     return PbHOT_KO_Vector_List
 
@@ -261,6 +269,21 @@ def _extract_sequence_before(
         return ''  # Return an empty string if the pattern is not found
 
 
+def duplication_status_check(base_id: str, segment_ids: list[str]):
+    def _status_check(row):
+        sequence = Seq.Seq(row[base_id])
+        segments = (
+            (segment_id, row[segment_id])
+            for segment_id in segment_ids
+        )
+        return {
+            segment_id: sequence.count_overlap(segment)
+            for segment_id, segment in segments
+        }
+
+    return _status_check
+
+
 def get_tag_sequence(input_gene):
     [PbHiT_HR1_merge] = load_tag_data()
     gene_gRNA = PbHiT_HR1_merge[PbHiT_HR1_merge['GENE ID'] == input_gene]
@@ -285,6 +308,14 @@ def get_tag_sequence(input_gene):
             PbHiT_Tag_Vector_List['Oligo sequence']
             + PbHiT_Tag_Vector_List[annotation]
         )
+
+    PbHiT_Tag_Vector_List["status"] = PbHiT_Tag_Vector_List.apply(
+        duplication_status_check(
+            'Oligo sequence',
+            anno.OLIGO_SEQUENCE_TAG_ORDER
+        ),
+        axis=1
+    )
 
     return PbHiT_Tag_Vector_List
 
