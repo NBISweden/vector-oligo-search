@@ -11,6 +11,13 @@ from functools import lru_cache
 logger = logging.getLogger(__name__)
 
 
+REQUIRED_UNIQUE_SEGMENTS = [
+    anno.BBS_I,
+    anno.AVR_II,
+    anno.PST_I,
+]
+
+
 # Set standard elements of the gRNA oligo into items
 BbsI = 'GAAGACggTATT'
 Scaffold = (
@@ -98,7 +105,7 @@ def get_ko_sequence(input_gene):
     PbHOT_KO_Vector_List["status"] = PbHOT_KO_Vector_List.apply(
         duplication_status_check(
             'Oligo sequence',
-            anno.OLIGO_SEQUENCE_KO_ORDER
+            REQUIRED_UNIQUE_SEGMENTS
         ),
         axis=1
     )
@@ -312,7 +319,7 @@ def get_tag_sequence(input_gene):
     PbHiT_Tag_Vector_List["status"] = PbHiT_Tag_Vector_List.apply(
         duplication_status_check(
             'Oligo sequence',
-            anno.OLIGO_SEQUENCE_TAG_ORDER
+            REQUIRED_UNIQUE_SEGMENTS
         ),
         axis=1
     )

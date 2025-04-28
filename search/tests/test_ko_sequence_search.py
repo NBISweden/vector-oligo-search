@@ -4,6 +4,7 @@ from .PbHiT_KO_Vector_Oligo_Search_NBIS import (
 )
 from ..oligo_search import (
     KOSearchContext,
+    REQUIRED_UNIQUE_SEGMENTS,
 )
 from .ko_gene_ids import gene_ids
 from ..annotations import Annotations as anno
@@ -42,13 +43,13 @@ def test_overlapping_ko_segments(gene_id):
 
     correct_status = tuple(
         (segment_id, 1)
-        for segment_id in anno.OLIGO_SEQUENCE_KO_ORDER
+        for segment_id in REQUIRED_UNIQUE_SEGMENTS
     )
 
     for i, row_status in enumerate(system_result['status']):
         status = tuple(
             (segment_id, row_status[segment_id])
-            for segment_id in anno.OLIGO_SEQUENCE_KO_ORDER
+            for segment_id in REQUIRED_UNIQUE_SEGMENTS
         )
         assert correct_status == status, (
             f"all segments occur only once in sequence for {gene_id} on row {i}"
