@@ -46,11 +46,16 @@ def test_overlapping_tag_segments(gene_id):
         for segment_id in REQUIRED_UNIQUE_SEGMENTS
     )
 
+    number_of_good_results = 0
     for i, row_status in enumerate(system_result['status']):
         status = tuple(
             (segment_id, row_status[segment_id])
             for segment_id in REQUIRED_UNIQUE_SEGMENTS
         )
-        assert correct_status == status, (
-            f"all segments occur only once in sequence for {gene_id} on row {i}"
-        )
+        if correct_status == status:
+            number_of_good_results += 1
+
+    number_of_results = len(system_result['Oligo sequence'])
+    assert number_of_good_results == number_of_results, (
+        f"all results for {gene_id} must be good but only {number_of_good_results} of {number_of_results}"
+    )
