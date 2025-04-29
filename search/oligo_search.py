@@ -57,7 +57,12 @@ def load_ko_data():
     ]
 
 
-def get_ko_sequence(input_gene):
+def overlap_filter(row):
+    status = row["status"]
+    return all(v == 1 for v in status.values()) 
+
+
+def get_ko_sequence(input_gene, remove_overlapping=True):
     [
         pHIT_KO_HR,
         gRNA_EuPaGDT_top
@@ -109,6 +114,12 @@ def get_ko_sequence(input_gene):
         ),
         axis=1
     )
+    if remove_overlapping:
+        overlapping_status = PbHOT_KO_Vector_List.apply(overlap_filter, axis=1)
+        PbHOT_KO_Vector_List = PbHOT_KO_Vector_List[overlapping_status]
+
+    if len(PbHOT_KO_Vector_List) == 0:
+        raise SearchError(f'No KO construct found: No valid sequences: {input_gene}')
 
     return PbHOT_KO_Vector_List
 
