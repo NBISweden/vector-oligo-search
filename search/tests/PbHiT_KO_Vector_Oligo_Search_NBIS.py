@@ -62,6 +62,19 @@ pHIT_KO_HR = pd.read_excel("./resources/ko/PbHiT_KO_Vector_HR_List_April16_RE.xl
 #gene_list=genes['Target Genes'].tolist()
 
 
+def duplication_status_check(row):
+    sequence = Seq(row['Oligo Sequence'])
+    segments = [
+        AvrII,
+        PstI,
+        BbsI,
+    ]
+    return sum(
+        sequence.count_overlap(segment)
+        for segment in segments
+    ) == 3
+
+
 #Convert to batch search
 #gene_list=['PBANKA_1237100','PBANKA_1040100','PBANKA_0310300','PBANKA_0622100','PBANKA_0709700','PBANKA_0823400','PBANKA_0826800','PBANKA_0826900','PBANKA_0827100','PBANKA_0829700','PBANKA_0831200']
 #rows=len(gene_list)
@@ -110,7 +123,16 @@ def get_sequence_list(gene_list):
         PbHOT_KO_Vector_List['GENE ID']=pHIT_KO_BbsI_gRNA_top2['GENE ID']
         PbHOT_KO_Vector_List['Oligo Sequence']=pHIT_KO_BbsI_gRNA_top2['Sequence']+pHIT_KO_HR_seq
 
-        new_row=PbHOT_KO_Vector_List
+        status = PbHOT_KO_Vector_List.apply(
+            duplication_status_check,
+            axis=1
+        )
+
+        new_row=PbHOT_KO_Vector_List[status]
+
+        if len(new_row) == 0:
+            raise RuntimeError(f'No valid sequences: {input_gene}')
+
         dftest=pd.concat([dftest,new_row])
         #df=df.append(new_row,ignore_index=True)
     return dftest
