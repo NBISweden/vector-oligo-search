@@ -33,24 +33,24 @@ PBANKA_GFF_FILE['GENE ID']=PBANKA_GFF_FILE['GENE ID'].replace('ID=PBANKA','PBANK
 #Read gRNA excel files as table
 
 #this file has top 3 gRNAs for each gene, read only until column C 'Total_score'
-gRNA_EuPaGDT_top = pd.read_excel("./resources/ko/selected_gRNA.PbHIT_KO_Test.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
-gRNA_EuPaGDT_top[['GENE ID', 'gRNA ID','directionality']] = gRNA_EuPaGDT_top.gRNA_id.str.split("_", expand = True)
+#gRNA_EuPaGDT_top = pd.read_excel("./resources/ko/selected_gRNA.PbHIT_KO_Test.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
+#gRNA_EuPaGDT_top[['GENE ID', 'gRNA ID','directionality']] = gRNA_EuPaGDT_top.gRNA_id.str.split("_", expand = True)
 #gRNA_EuPaGDT_top.rename(columns={'gRNA_id':'GENE ID'}, inplace = True)
-gRNA_EuPaGDT_top['GENE ID']=gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA','PBANKA_', regex= True)
+#gRNA_EuPaGDT_top['GENE ID']=gRNA_EuPaGDT_top['GENE ID'].replace('PBANKA','PBANKA_', regex= True)
 
 #gRNA_EuPaGDT_top.head(5)
 
 #this file has all gRNAs for each gene, read only until column C 'Total_score'
-#gRNA_EuPaGDT_all = pd.read_excel("./resources/all_gRNA.PbHIT_KO_Test.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
-#gRNA_EuPaGDT_all[['GENE ID', 'gRNA ID','directionality']] = gRNA_EuPaGDT_all.gRNA_id.str.split("_", expand = True)
+gRNA_EuPaGDT_all = pd.read_excel("./resources/ko/all_gRNA.PbHIT_KO_Test.xlsx",index_col=None, na_values=['NA'], usecols="A:C")
+gRNA_EuPaGDT_all[['GENE ID', 'gRNA ID','directionality']] = gRNA_EuPaGDT_all.gRNA_id.str.split("_", expand = True)
 #gRNA_EuPaGDT_all.rename(columns={'gRNA_id':'GENE ID'}, inplace = True)
-#gRNA_EuPaGDT_all['GENE ID']=gRNA_EuPaGDT_all['GENE ID'].replace('PBANKA','PBANKA_', regex= True)
+gRNA_EuPaGDT_all['GENE ID']=gRNA_EuPaGDT_all['GENE ID'].replace('PBANKA','PBANKA_', regex= True)
 
 #gRNA_EuPaGDT_all.head(5)
 
 
 #Combine gRNA strand information and gRNA file
-gRNA_EuPaGDT_top = pd.merge(gRNA_EuPaGDT_top,PBANKA_GFF_FILE,on='GENE ID')
+gRNA_EuPaGDT_top = pd.merge(gRNA_EuPaGDT_all,PBANKA_GFF_FILE,on='GENE ID')
 #gRNA_EuPaGDT_top.head()
 
 
@@ -95,8 +95,8 @@ def get_sequence_list(gene_list):
             "GENE ID": input_gene,
             "Sequence": Result1
         })
-    
-        pHIT_KO_BbsI_gRNA_top2=pHIT_KO_BbsI_gRNA.iloc[:3]
+
+        pHIT_KO_BbsI_gRNA_top2=pHIT_KO_BbsI_gRNA
 
         gene_HR=pHIT_KO_HR[pHIT_KO_HR['GENE ID']==input_gene]
         strand=gene_HR['strand_x'].to_list()[0]
@@ -128,7 +128,8 @@ def get_sequence_list(gene_list):
             axis=1
         )
 
-        new_row=PbHOT_KO_Vector_List[status]
+        no_overlaps = PbHOT_KO_Vector_List[status]
+        new_row = no_overlaps.iloc[:3]
 
         if len(new_row) == 0:
             raise RuntimeError(f'No valid sequences: {input_gene}')

@@ -56,6 +56,9 @@ def test_overlapping_ko_segments(gene_id):
             number_of_good_results += 1
 
     number_of_results = len(system_result['Oligo sequence'])
+    assert number_of_results == 3, (
+        f"The number of results was {number_of_results} but must be 3"
+    )
     assert number_of_good_results == number_of_results, (
         f"all results for {gene_id} must be good but only {number_of_good_results} of {number_of_results}"
     )

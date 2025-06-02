@@ -35,7 +35,7 @@ def load_ko_data():
     # this file has top 3 gRNAs for each gene,
     # read only until column C 'Total_score'
     gRNA_EuPaGDT_top = pd.read_excel(
-        "./resources/ko/selected_gRNA.PbHIT_KO_Test.xlsx",
+        "./resources/ko/all_gRNA.PbHIT_KO_Test.xlsx",
         index_col=None,
         na_values=['NA'],
         usecols="A:C"
@@ -75,7 +75,7 @@ def get_ko_sequence(input_gene, remove_overlapping=True):
     if gene_HR.empty:
         raise SearchError(f'No KO construct found: No gene found for: {input_gene}')
 
-    gene_gRNA_top2 = gene_gRNA.iloc[:3]
+    gene_gRNA_top2 = gene_gRNA
 
     use_forward_hr_pair = gene_HR['strand_x'].to_list()[0] == '+'
     HR2 = (
@@ -121,7 +121,7 @@ def get_ko_sequence(input_gene, remove_overlapping=True):
     if len(PbHOT_KO_Vector_List) == 0:
         raise SearchError(f'No KO construct found: No valid sequences: {input_gene}')
 
-    return PbHOT_KO_Vector_List
+    return PbHOT_KO_Vector_List.iloc[:3]
 
 
 @lru_cache
