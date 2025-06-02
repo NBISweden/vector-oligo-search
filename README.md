@@ -60,3 +60,15 @@ To use an image you can access it from githubs registry as follows:
 ```sh
 docker pull ghcr.io/nbisweden/vector-oligo-search:main
 ```
+
+## Running tests
+```sh
+# Run all tests
+docker compose exec web pytest search/tests
+
+# Run KO overlapping tests
+docker compose exec web pytest search/tests -k test_overlapping_ko_segments
+
+# Run Tag overlapping tests
+docker compose exec web pytest search/tests -k test_overlapping_tag_segments
+```
