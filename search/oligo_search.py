@@ -59,7 +59,7 @@ def load_ko_data():
 
 def overlap_filter(row):
     status = row["status"]
-    return all(v == 1 for v in status.values()) 
+    return all(v == 1 for v in status.values())
 
 
 def get_ko_sequence(input_gene, remove_overlapping=True):
@@ -127,21 +127,25 @@ def get_ko_sequence(input_gene, remove_overlapping=True):
 @lru_cache
 def load_tag_data():
     logger.info("Loading TAG data")
-    # Read gRNA excel files as table
-
-    # this file has top 3 gRNAs for each gene,
-    # read only until column C 'Total_score'
+    # Load the Excel file, reading only columns A to C
     gRNA_EuPaGDT_tag_top = pd.read_excel(
-        "./resources/tag/selected_gRNA.CRISPR_tagging.xlsx",
+        "./resources/tag/all_gRNA.CRISPR_tagging_250bp.xlsx",
         index_col=None,
         na_values=['NA'],
         usecols="A:C"
     )
-    gRNA_EuPaGDT_tag_top[['GENE ID', 'gRNA ID', 'directionality']] = (
-        gRNA_EuPaGDT_tag_top.gRNA_id.str.split("_", expand=True)
-    )
+
+    # Split 'gRNA_id' into 'GENE ID', 'gRNA ID', and 'directionality'
+    split_cols = gRNA_EuPaGDT_tag_top['gRNA_id'].str.split("_", expand=True)
+    split_cols.columns = ['GENE ID', 'gRNA ID', 'directionality']
+
+    # Drop the original 'gRNA_id' column and add the new columns
+    gRNA_EuPaGDT_tag_top.drop(columns=['gRNA_id'], inplace=True)
+    gRNA_EuPaGDT_tag_top = pd.concat([gRNA_EuPaGDT_tag_top, split_cols], axis=1)
+
+    # Optional: clean up 'GENE ID' format
     gRNA_EuPaGDT_tag_top['GENE ID'] = (
-        gRNA_EuPaGDT_tag_top['GENE ID'].replace(
+        gRNA_EuPaGDT_tag_top['GENE ID'].str.replace(
             'PBANKA',
             'PBANKA_',
             regex=True
@@ -152,20 +156,15 @@ def load_tag_data():
 
     # Read HR1 FASTA file
     (genes, HR1_seq) = _parse_HR_fasta(
-        "./resources/tag/PbHiT_Tagging_HR1_Final.fasta"
+        "./resources/tag/PbHiT_Tag_HR1.fasta"
     )
 
     # Read HR2 FASTA file
     (genes, HR2_seq) = _parse_HR_fasta(
-        "./resources/tag/PbHiT_Tagging_HR2_Final.fasta"
+        "./resources/tag/PbHiT_Tag_HR2.fasta"
     )
 
-    # Read HR1_rev FASTA file
-    (genes, HR1_seq_rev) = _parse_HR_fasta(
-        "./resources/tag/PbHiT_Tagging_HR1_Final_rev_comp.fasta"
-    )
-
-    # Read HR2_rev FASTA file
+    # Read HR2 FASTA file
     (genes, HR2_seq_rev) = _parse_HR_fasta(
         "./resources/tag/PbHiT_Tagging_HR2_Final_rev_comp.fasta"
     )
@@ -175,7 +174,6 @@ def load_tag_data():
         "GENE ID": genes,
         "HR1 Sequence": HR1_seq,
         "HR2 Sequence": HR2_seq,
-        "HR1 Sequence Rev": HR1_seq_rev,
         "HR2 Sequence Rev": HR2_seq_rev,
     })
 
@@ -188,26 +186,33 @@ def load_tag_data():
     )
     PbHiT_Tagging_Merge = pd.DataFrame(merged_df)
 
+    columns_to_convert = [
+        'gRNA_sequence',
+        'HR1 Sequence',
+        'HR2 Sequence',
+        'HR2 Sequence Rev'
+    ]
+    PbHiT_Tagging_Merge[columns_to_convert] = PbHiT_Tagging_Merge[columns_to_convert].fillna("").astype(str)
+    PbHiT_Tagging_Merge[columns_to_convert] = PbHiT_Tagging_Merge[columns_to_convert].astype(str)
+
     # Use apply to perform the search and extract operation
-    PbHiT_Tagging_Merge['Extracted_Sequence'] = PbHiT_Tagging_Merge.apply(
+    PbHiT_Tagging_Merge['Extracted_Sequence_Fw'] = PbHiT_Tagging_Merge.apply(
         _extract_sequence,
         axis=1,
         search_column='gRNA_sequence',
-        target_column='HR1 Sequence'
+        target_column='HR2 Sequence'
     )
     PbHiT_HR1_Final_Fw = PbHiT_Tagging_Merge.copy()
 
     # Use apply to perform the search and extract operation
-    PbHiT_Tagging_Merge['Extracted_Sequence'] = PbHiT_Tagging_Merge.apply(
+    PbHiT_Tagging_Merge['Extracted_Sequence_Rev'] = PbHiT_Tagging_Merge.apply(
         _extract_sequence_before,
         axis=1,
         search_column='gRNA_sequence',
-        target_column='HR1 Sequence Rev'
+        target_column='HR2 Sequence Rev'
     )
     PbHiT_HR1_Final_Rev = PbHiT_Tagging_Merge.copy()
 
-    # Merge the two DataFrames on two common
-    # columns (e.g., 'column1' and 'column2')
     PbHiT_HR1_merge = pd.merge(
         PbHiT_HR1_Final_Fw,
         PbHiT_HR1_Final_Rev,
@@ -215,9 +220,7 @@ def load_tag_data():
             'GENE ID',
             'HR1 Sequence',
             'HR2 Sequence',
-            'HR1 Sequence Rev',
             'HR2 Sequence Rev',
-            'gRNA_id',
             'gRNA_sequence',
             'Total_score',
             'gRNA ID',
@@ -226,11 +229,17 @@ def load_tag_data():
         how='inner'
     )
 
-    # Concatenate the Extracted sequence column
-    PbHiT_HR1_merge['HR1_Tag'] = (
-        PbHiT_HR1_merge['Extracted_Sequence_x'].fillna('') +
-        PbHiT_HR1_merge['Extracted_Sequence_y']
+    # Convert Extracted Sequence y into Reverse complement
+    PbHiT_HR1_merge['Extracted_Sequence_Rev'] = PbHiT_HR1_merge['Extracted_Sequence_Rev'].apply(
+        lambda seq: str(Seq.Seq(str(seq).strip().upper()).reverse_complement())
     )
+
+    # Concatenate the Extracted sequence column
+    PbHiT_HR1_merge['HR2_Tag'] = (
+        PbHiT_HR1_merge['Extracted_Sequence_Fw_x'].fillna('') +
+        PbHiT_HR1_merge['Extracted_Sequence_Rev']
+    )
+
     logger.info("TAG data loaded")
     return [PbHiT_HR1_merge]
 
@@ -302,22 +311,23 @@ def duplication_status_check(base_id: str, segment_ids: list[str]):
     return _status_check
 
 
-def get_tag_sequence(input_gene):
+def get_tag_sequence(input_gene, remove_overlapping=True):
     [PbHiT_HR1_merge] = load_tag_data()
-    gene_gRNA = PbHiT_HR1_merge[PbHiT_HR1_merge['GENE ID'] == input_gene]
 
-    if gene_gRNA.empty:
+    gene_filtered = PbHiT_HR1_merge[PbHiT_HR1_merge['GENE ID'] == input_gene]
+
+    if gene_filtered.empty:
         raise SearchError(f'No tagging construct found: No gRNA found for: {input_gene}')
 
     PbHiT_Tag_Vector_List = pd.DataFrame({
         'Oligo sequence': "",
         'GENE ID': input_gene,
         anno.BBS_I: BbsI,
-        anno.GRNA: gene_gRNA['gRNA_sequence'],
+        anno.GRNA: gene_filtered['gRNA_sequence'],
         anno.SCAFFOLD: Scaffold,
-        anno.HR1: gene_gRNA['HR1_Tag'],
+        anno.HR1: gene_filtered['HR1 Sequence'],
         anno.AVR_II: AvrII,
-        anno.HR2: gene_gRNA['HR2 Sequence'],
+        anno.HR2: gene_filtered['HR2_Tag'],
         anno.PST_I: PstI
     })
 
@@ -335,7 +345,14 @@ def get_tag_sequence(input_gene):
         axis=1
     )
 
-    return PbHiT_Tag_Vector_List
+    if remove_overlapping:
+        overlapping_status = PbHiT_Tag_Vector_List.apply(overlap_filter, axis=1)
+        PbHiT_Tag_Vector_List = PbHiT_Tag_Vector_List[overlapping_status]
+
+    if len(PbHiT_Tag_Vector_List) == 0:
+        raise SearchError(f'No Tag construct found: No valid sequences: {input_gene}')
+
+    return PbHiT_Tag_Vector_List.head(3)
 
 
 class KOSearchContext:
