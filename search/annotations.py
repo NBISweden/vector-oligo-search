@@ -24,8 +24,8 @@ class Annotations:
         BBS_I,
         GRNA,
         SCAFFOLD,
-        HR2,
-        AVR_II,
         HR1,
+        AVR_II,
+        HR2,
         PST_I,
     ]

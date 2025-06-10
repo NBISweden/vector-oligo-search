@@ -332,9 +332,9 @@ def get_tag_sequence(input_gene, remove_overlapping=True):
         anno.BBS_I: BbsI,
         anno.GRNA: gene_filtered['gRNA_sequence'],
         anno.SCAFFOLD: Scaffold,
-        anno.HR1: gene_filtered['HR1 Sequence'],
+        anno.HR1: gene_filtered['HR2_Tag'],
         anno.AVR_II: AvrII,
-        anno.HR2: gene_filtered['HR2_Tag'],
+        anno.HR2: gene_filtered['HR1 Sequence'],
         anno.PST_I: PstI
     })
 
