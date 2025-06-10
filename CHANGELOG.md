@@ -1,3 +1,14 @@
+## 1.3.0-rc2 (2025-06-10)
+
+### Feat
+
+- add support for filtering out results with overlaps
+
+### Fix
+
+- update tagging calculations
+- add overlap removal to KO reference script
+
 ## 1.3.0-rc1 (2025-04-28)
 
 ### Fix
