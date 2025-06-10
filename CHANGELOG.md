@@ -1,3 +1,9 @@
+## 1.3.0-rc4 (2025-06-10)
+
+### Fix
+
+- restore annotations for tagging
+
 ## 1.3.0-rc3 (2025-06-10)
 
 ### Fix
