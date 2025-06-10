@@ -1,3 +1,9 @@
+## 1.3.0-rc3 (2025-06-10)
+
+### Fix
+
+- precache data to make inital responses faster
+
 ## 1.3.0-rc2 (2025-06-10)
 
 ### Feat
