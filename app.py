@@ -9,6 +9,7 @@ from flask import (
 import os
 import logging
 from search.oligo_search import (
+    precache_data,
     df_to_file,
     TagSearchContext,
     KOSearchContext
@@ -21,13 +22,27 @@ from flask_compress import Compress
 
 
 logger = logging.getLogger(__name__)
-app = Flask(
-    __name__,
-    static_folder="static"
+
+
+def create_app(
+    secret_key,
+    message_root,
+):
+    precache_data()
+    app = Flask(
+        __name__,
+        static_folder="static"
+    )
+    app.secret_key = secret_key
+    app.config["MESSAGE_ROOT"] = message_root
+    Compress(app)
+    return app
+
+
+app = create_app(
+    secret_key=os.getenv("APP_SECRET_KEY", os.urandom(24).hex()),
+    message_root=os.getenv("APP_MESSAGE_ROOT", "/home/vector_oligo_search")
 )
-app.secret_key = os.getenv("APP_SECRET_KEY", os.urandom(24).hex())
-app.config["MESSAGE_ROOT"] = os.getenv("APP_MESSAGE_ROOT", "/home/vector_oligo_search")
-Compress(app)
 
 
 def load_markdown(path: str):

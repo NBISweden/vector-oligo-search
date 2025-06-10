@@ -28,6 +28,13 @@ AvrII = 'CCTAGG'
 PstI = 'CTGCAG'
 
 
+def precache_data():
+    logger.info("Pre caching data")
+    ko_data = load_ko_data()
+    tag_data = load_tag_data()
+    logger.info("Data is cached")
+
+
 @lru_cache
 def load_ko_data():
     logger.info("Loading KO data")
