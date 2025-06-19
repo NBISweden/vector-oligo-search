@@ -166,8 +166,9 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
       <div class="container-fluid px-lg-5" id="item-view"></div>
       <script src="/static/vendor/mustache.js"></script>
       <script src="/static/render-items.js"></script>
+      <script id="search-result-data" type="application/json">{{ output | tojson | safe}}</script>
       <script>
-        const items = {% autoescape false %}{{ output }}{% endautoescape %};
+        const items = JSON.parse(document.getElementById("search-result-data").textContent);
         const updatePageState = getPaginator(items);
         updatePageState();
         window.addEventListener("hashchange", updatePageState)

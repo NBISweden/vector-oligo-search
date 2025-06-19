@@ -150,7 +150,7 @@ def form():
         content=html,
         gene_ids=gene_ids,
         lookup_type=lookup_type,
-        output=None if output is None else json.dumps(output),
+        output=output,
         error=error,
         status_code=status_code,
         message=message,
