@@ -1,3 +1,9 @@
+## 1.3.0-rc6 (2025-06-19)
+
+### Refactor
+
+- clean up use of search results
+
 ## 1.3.0-rc5 (2025-06-19)
 
 ### Fix
