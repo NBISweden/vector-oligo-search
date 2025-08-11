@@ -5,7 +5,6 @@ import frontmatter
 import markdown
 from markdown.extensions.toc import TocExtension
 from flask_compress import Compress
-from search.oligo_search import precache_data
 
 
 def create_app(
@@ -13,7 +12,6 @@ def create_app(
     message_root,
     template_folder="../templates",
 ):
-    precache_data()
     app = Flask(
         __name__,
         static_folder="../static",

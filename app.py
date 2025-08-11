@@ -13,11 +13,13 @@ from search.oligo_search import (
 )
 from search.search import SearchError, stream_to_base64_url
 from search.core import create_app, load_markdown
+from search.oligo_search import precache_data
 
 
 logger = logging.getLogger(__name__)
 
 
+precache_data()
 app = create_app(
     secret_key=os.getenv("APP_SECRET_KEY", os.urandom(24).hex()),
     message_root=os.getenv("APP_MESSAGE_ROOT", "/home/vector_oligo_search"),
