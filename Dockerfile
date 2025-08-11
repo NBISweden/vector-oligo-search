@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.4
-FROM python:3.9-slim AS base
+FROM python:3.9-slim-bookworm AS base
 
 WORKDIR /app
 
@@ -21,6 +21,12 @@ COPY requirements.dev.txt requirements.dev.txt
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install -r requirements.dev.txt
+
+RUN apt-get update
+RUN apt-get install -y default-jre
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install html5validator
 
 USER python
 CMD flask --app app.py --debug run --host 0.0.0.0 --port "${APP_PORT:-5000}"

@@ -51,7 +51,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
   {% else %}
     {% if output %}
       <hr/>
-      <script id="accordion-list-view-template" type="x-tmpl-mustache">
+      <script id="accordion-list-view-template" type="application/x-tmpl-mustache">
         {% raw %}
         <nav aria-label="Page navigation" class="my-3">
           <ul class="pagination justify-content-center">
@@ -115,7 +115,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
           </ul>
         </nav>{% endraw %}
       </script>
-      <script id="table-list-view-template" type="x-tmpl-mustache">
+      <script id="table-list-view-template" type="application/x-tmpl-mustache">
         {% raw %}<nav aria-label="Page navigation" class="my-3">
           <ul class="pagination justify-content-center">
             {{#paginationItems}}
@@ -149,7 +149,7 @@ PBANKA_0617800">{% for gene_id in gene_ids %}{{ gene_id }}
           </ul>
         </nav>{% endraw %}
       </script>
-      <script id="view-type-view-template" type="x-tmpl-mustache">
+      <script id="view-type-view-template" type="application/x-tmpl-mustache">
         {% raw %}<div class="btn-group" role="group" aria-label="View type">
           {{#viewTypes}}
           <a class="btn btn-primary {{active}}" href="#?page={{currentPageNumber}}&pageSize={{pageSize}}&view={{id}}"><i class="{{icon}}"></i></a>

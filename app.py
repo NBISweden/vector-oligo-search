@@ -1,58 +1,27 @@
 from flask import (
-    Flask,
     request,
     render_template,
-    json,
     redirect,
     current_app,
 )
 import os
 import logging
 from search.oligo_search import (
-    precache_data,
     df_to_file,
     TagSearchContext,
     KOSearchContext
 )
 from search.search import SearchError, stream_to_base64_url
-import frontmatter
-import markdown
-from markdown.extensions.toc import TocExtension
-from flask_compress import Compress
+from search.core import create_app, load_markdown
 
 
 logger = logging.getLogger(__name__)
 
 
-def create_app(
-    secret_key,
-    message_root,
-):
-    precache_data()
-    app = Flask(
-        __name__,
-        static_folder="static"
-    )
-    app.secret_key = secret_key
-    app.config["MESSAGE_ROOT"] = message_root
-    Compress(app)
-    return app
-
-
 app = create_app(
     secret_key=os.getenv("APP_SECRET_KEY", os.urandom(24).hex()),
-    message_root=os.getenv("APP_MESSAGE_ROOT", "/home/vector_oligo_search")
+    message_root=os.getenv("APP_MESSAGE_ROOT", "/home/vector_oligo_search"),
 )
-
-
-def load_markdown(path: str):
-    with open(path, "r") as f:
-        page_data = frontmatter.load(f)
-        html = markdown.markdown(
-            page_data.content,
-            extensions=[TocExtension(baselevel=1)]
-        )
-        return (html, page_data)
 
 
 def get_page(page_id: str):
@@ -69,7 +38,7 @@ def get_message(msg_id: str):
             'content': html,
             'type': page_data.get('type', 'warning')
         }
-    except (KeyError, FileNotFoundError) as e:
+    except (KeyError, FileNotFoundError):
         return None
 
 
