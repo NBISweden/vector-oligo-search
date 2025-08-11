@@ -7,7 +7,6 @@ from ..oligo_search import (
     REQUIRED_UNIQUE_SEGMENTS,
 )
 from .ko_gene_ids import gene_ids
-from ..annotations import Annotations as anno
 
 
 @pytest.mark.parametrize('gene_id', list(gene_ids))
@@ -36,7 +35,8 @@ def test_compare_ko_algorithms(gene_id):
 
 @pytest.mark.parametrize('gene_id', list(gene_ids))
 def test_overlapping_ko_segments(gene_id):
-    # NOTE: A number of these tests are expected to fail at the moment and may be fixed later
+    # NOTE: A number of these tests are expected to fail at the moment and
+    # may be fixed later
 
     search_context = KOSearchContext()
     system_result = search_context.get_sequence_list([gene_id])
@@ -60,6 +60,6 @@ def test_overlapping_ko_segments(gene_id):
         f"The number of results was {number_of_results} but must be 3"
     )
     assert number_of_good_results == number_of_results, (
-        f"all results for {gene_id} must be good but only {number_of_good_results} of {number_of_results}"
+        f"all results for {gene_id} must be good but "
+        f"only {number_of_good_results} of {number_of_results}"
     )
-

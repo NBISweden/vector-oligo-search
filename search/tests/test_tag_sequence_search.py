@@ -7,7 +7,6 @@ from ..oligo_search import (
     REQUIRED_UNIQUE_SEGMENTS
 )
 from .tag_gene_ids import gene_ids
-from ..annotations import Annotations as anno
 
 
 @pytest.mark.parametrize('gene_id', list(gene_ids))
@@ -36,7 +35,8 @@ def test_compare_tag_algorithms(gene_id):
 
 @pytest.mark.parametrize('gene_id', list(gene_ids))
 def test_overlapping_tag_segments(gene_id):
-    # NOTE: A number of these tests are expected to fail at the moment and may be fixed later
+    # NOTE: A number of these tests are expected to fail at the moment and
+    # may be fixed later
 
     search_context = TagSearchContext()
     system_result = search_context.get_sequence_list([gene_id])
@@ -57,5 +57,6 @@ def test_overlapping_tag_segments(gene_id):
 
     number_of_results = len(system_result['Oligo sequence'])
     assert number_of_good_results == number_of_results, (
-        f"all results for {gene_id} must be good but only {number_of_good_results} of {number_of_results}"
+        f"all results for {gene_id} must be good but "
+        f"only {number_of_good_results} of {number_of_results}"
     )
